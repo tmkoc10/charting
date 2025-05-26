@@ -17,7 +17,7 @@ function Navbar({ className }: { className?: string }) {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push("/auth");
+    router.push("/auth/login");
   };
   return (
     <div

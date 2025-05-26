@@ -1,11 +1,5 @@
-"use client";
-
-import { AuthContainer } from "@/components/auth/auth-container";
+import { redirect } from 'next/navigation'
 
 export default function AuthPage() {
-  return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <AuthContainer />
-    </div>
-  );
-}
+  redirect('/auth/login')
+} 

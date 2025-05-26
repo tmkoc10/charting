@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { getLatestPrice, getPriceChange, formatPrice } from "@/lib/chart-data";
+import { UserAccountDropdown } from "./user-account-dropdown";
 
 // Define symbol search types
 type SymbolData = {
@@ -1086,26 +1087,9 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd 
 
   return (
     <header className="h-[38px] bg-black border-b border-zinc-800 flex items-stretch px-0">
-      {/* Left sidebar profile logo section - aligned with left sidebar width (52px) */}
+      {/* Left sidebar profile section - aligned with left sidebar width (52px) */}
       <div className="w-[52px] flex items-center justify-center">
-        <div className="h-6 w-6 bg-zinc-900 rounded-full flex items-center justify-center overflow-hidden">
-          {/* Profile icon/avatar */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-zinc-300"
-          >
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
+        <UserAccountDropdown />
       </div>
 
       {/* Main header content */}
