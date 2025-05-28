@@ -1,0 +1,192 @@
+import { StockData, FilterOption, TabConfig } from './types';
+
+export const mockStockData: StockData[] = [
+  {
+    symbol: 'MSFT',
+    companyName: 'Microsoft Corporation',
+    price: 459.76,
+    change: 9.56,
+    changePercent: 2.13,
+    volume: '11.2M',
+    relVolume: 0.55,
+    marketCap: '3.42T',
+    pe: 35.53,
+    eps: 12.94,
+    epsGrowth: 12.13,
+    divYield: 0.70,
+    sector: 'Technology services'
+  },
+  {
+    symbol: 'NVDA',
+    companyName: 'NVIDIA Corporation',
+    price: 135.32,
+    change: 4.03,
+    changePercent: 3.07,
+    volume: '133.15M',
+    relVolume: 0.58,
+    marketCap: '3.3T',
+    pe: 46.04,
+    eps: 2.94,
+    epsGrowth: 146.27,
+    divYield: 0.03,
+    sector: 'Electronic technology'
+  },
+  {
+    symbol: 'AAPL',
+    companyName: 'Apple Inc.',
+    price: 200.49,
+    change: 5.21,
+    changePercent: 2.67,
+    volume: '35.39M',
+    relVolume: 0.66,
+    marketCap: '2.99T',
+    pe: 31.29,
+    eps: 6.41,
+    epsGrowth: -0.36,
+    divYield: 0.51,
+    sector: 'Electronic technology'
+  },
+  {
+    symbol: 'AMZN',
+    companyName: 'Amazon.com Inc.',
+    price: 218.44,
+    change: 4.89,
+    changePercent: 2.29,
+    volume: '28.76M',
+    relVolume: 0.72,
+    marketCap: '2.29T',
+    pe: 47.12,
+    eps: 4.63,
+    epsGrowth: 85.42,
+    divYield: 0.00,
+    sector: 'Retail trade'
+  },
+  {
+    symbol: 'GOOGL',
+    companyName: 'Alphabet Inc.',
+    price: 186.35,
+    change: 3.24,
+    changePercent: 1.77,
+    volume: '19.87M',
+    relVolume: 0.63,
+    marketCap: '2.24T',
+    pe: 24.18,
+    eps: 7.71,
+    epsGrowth: 31.25,
+    divYield: 0.00,
+    sector: 'Technology services'
+  },
+  {
+    symbol: 'META',
+    companyName: 'Meta Platforms Inc.',
+    price: 595.94,
+    change: 8.76,
+    changePercent: 1.49,
+    volume: '12.43M',
+    relVolume: 0.48,
+    marketCap: '1.51T',
+    pe: 26.84,
+    eps: 22.20,
+    epsGrowth: 168.75,
+    divYield: 0.37,
+    sector: 'Technology services'
+  },
+  {
+    symbol: 'TSLA',
+    companyName: 'Tesla Inc.',
+    price: 436.58,
+    change: -5.23,
+    changePercent: -1.18,
+    volume: '45.67M',
+    relVolume: 1.23,
+    marketCap: '1.39T',
+    pe: 88.42,
+    eps: 4.94,
+    epsGrowth: 128.33,
+    divYield: 0.00,
+    sector: 'Consumer durables'
+  },
+  {
+    symbol: 'AVGO',
+    companyName: 'Broadcom Inc.',
+    price: 220.15,
+    change: 2.87,
+    changePercent: 1.32,
+    volume: '1.89M',
+    relVolume: 0.41,
+    marketCap: '1.03T',
+    pe: 168.58,
+    eps: 1.31,
+    epsGrowth: 15.67,
+    divYield: 1.86,
+    sector: 'Electronic technology'
+  },
+  {
+    symbol: 'BRK.B',
+    companyName: 'Berkshire Hathaway Inc.',
+    price: 467.89,
+    change: 3.45,
+    changePercent: 0.74,
+    volume: '2.34M',
+    relVolume: 0.67,
+    marketCap: '1.01T',
+    pe: 16.23,
+    eps: 28.84,
+    epsGrowth: 8.92,
+    divYield: 0.00,
+    sector: 'Finance'
+  },
+  {
+    symbol: 'WMT',
+    companyName: 'Walmart Inc.',
+    price: 95.84,
+    change: 0.89,
+    changePercent: 0.94,
+    volume: '8.76M',
+    relVolume: 0.78,
+    marketCap: '782.5B',
+    pe: 38.67,
+    eps: 2.48,
+    epsGrowth: 12.45,
+    divYield: 2.87,
+    sector: 'Retail trade'
+  }
+];
+
+export const filterOptions: FilterOption[] = [
+  { label: 'All stocks', value: 'all' },
+  { label: 'Market', value: 'market' },
+  { label: 'Watchlist', value: 'watchlist' },
+  { label: 'Index', value: 'index' },
+  { label: 'Price', value: 'price' },
+  { label: 'Change %', value: 'change' },
+  { label: 'Market cap', value: 'marketcap' },
+  { label: 'P/E', value: 'pe' },
+  { label: 'EPS dil growth', value: 'epsgrowth' },
+  { label: 'Div yield %', value: 'divyield' },
+  { label: 'Sector', value: 'sector' },
+  { label: 'Analyst Rating', value: 'rating' },
+  { label: 'Perf %', value: 'performance' }
+];
+
+export const secondaryFilterOptions: FilterOption[] = [
+  { label: 'Revenue growth', value: 'revenue' },
+  { label: 'PEG', value: 'peg' },
+  { label: 'ROE', value: 'roe' },
+  { label: 'Beta', value: 'beta' },
+  { label: 'Recent earnings date', value: 'recent-earnings' },
+  { label: 'Upcoming earnings date', value: 'upcoming-earnings' }
+];
+
+export const tabConfig: TabConfig[] = [
+  { id: 'overview', label: 'Overview', active: true },
+  { id: 'performance', label: 'Performance' },
+  { id: 'extended-hours', label: 'Extended Hours' },
+  { id: 'valuation', label: 'Valuation' },
+  { id: 'dividends', label: 'Dividends' },
+  { id: 'profitability', label: 'Profitability' },
+  { id: 'income-statement', label: 'Income Statement' },
+  { id: 'balance-sheet', label: 'Balance Sheet' },
+  { id: 'cash-flow', label: 'Cash Flow' },
+  { id: 'technicals', label: 'Technicals' }
+];

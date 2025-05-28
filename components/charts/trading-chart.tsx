@@ -34,12 +34,12 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
       },
 
       grid: {
-        vertLines: { 
+        vertLines: {
           color: '#27272a',
           style: 0,
           visible: true,
         },
-        horzLines: { 
+        horzLines: {
           color: '#27272a',
           style: 0,
           visible: true,
@@ -106,7 +106,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
         watermarks.forEach(watermark => {
           (watermark as HTMLElement).style.display = 'none';
         });
-        
+
         const logoImages = document.querySelectorAll('img[src*="tradingview"]');
         logoImages.forEach(img => {
           (img as HTMLElement).style.display = 'none';
@@ -131,7 +131,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
 
     // Get chart data for the current symbol and timeframe
     const chartData = getChartData(symbol, timeframe);
-    
+
     // Convert our data format to LightweightCharts format
     const sampleData = chartData.map(candle => ({
       time: Math.floor(candle.time / 1000) as any, // Convert to seconds for LightweightCharts
@@ -149,7 +149,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
       watermarks.forEach(watermark => {
         (watermark as HTMLElement).style.display = 'none';
       });
-      
+
       // Also hide any TradingView logo images
       const logoImages = document.querySelectorAll('img[src*="tradingview"], img[alt*="TradingView"], img[alt*="tradingview"]');
       logoImages.forEach(img => {
@@ -188,8 +188,27 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
     return () => {
       window.removeEventListener('resize', handleResize);
       resizeObserver.disconnect();
+
+      // Clean up indicator series before removing the chart
+      indicatorSeriesRef.current.forEach((series, key) => {
+        try {
+          if (chartRef.current && series) {
+            chartRef.current.removeSeries(series);
+          }
+        } catch (error) {
+          console.warn(`Error removing indicator series ${key} during cleanup:`, error);
+        }
+      });
+      indicatorSeriesRef.current.clear();
+
+      // Remove the chart
       if (chartRef.current) {
-        chartRef.current.remove();
+        try {
+          chartRef.current.remove();
+        } catch (error) {
+          console.warn('Error removing chart during cleanup:', error);
+        }
+        chartRef.current = null;
       }
     };
   }, [symbol, timeframe]);
@@ -222,15 +241,19 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
   // Update chart data when symbol or timeframe changes
   useEffect(() => {
     if (seriesRef.current) {
-      const newChartData = getChartData(symbol, timeframe);
-      const newData = newChartData.map(candle => ({
-        time: Math.floor(candle.time / 1000) as any,
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      }));
-      seriesRef.current.setData(newData);
+      try {
+        const newChartData = getChartData(symbol, timeframe);
+        const newData = newChartData.map(candle => ({
+          time: Math.floor(candle.time / 1000) as any,
+          open: candle.open,
+          high: candle.high,
+          low: candle.low,
+          close: candle.close,
+        }));
+        seriesRef.current.setData(newData);
+      } catch (error) {
+        console.error('Error updating chart data:', error);
+      }
     }
   }, [symbol, timeframe]);
 
@@ -238,10 +261,15 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
   useEffect(() => {
     if (!chartRef.current) return;
 
-    // Clear existing indicator series
-    indicatorSeriesRef.current.forEach((series) => {
-      if (chartRef.current) {
-        chartRef.current.removeSeries(series);
+    // Clear existing indicator series with proper error handling
+    indicatorSeriesRef.current.forEach((series, key) => {
+      try {
+        // Double-check that chart and series are still valid
+        if (chartRef.current && series) {
+          chartRef.current.removeSeries(series);
+        }
+      } catch (error) {
+        console.warn(`Failed to remove indicator series ${key}:`, error);
       }
     });
     indicatorSeriesRef.current.clear();
@@ -253,7 +281,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
       try {
         // Get chart data for calculations
         const chartData = getChartData(symbol, timeframe);
-        
+
         if (chartData.length === 0) return;
 
         // Convert chart data to OHLC format for indicator calculation
@@ -267,7 +295,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
 
         // Extract indicator ID from the applied indicator ID (remove timestamp suffix)
         const indicatorId = indicator.id.split('_')[0];
-        
+
         // Calculate indicator values
         const numericParameters: Record<string, number> = {};
         Object.entries(indicator.parameters).forEach(([key, value]) => {
@@ -281,27 +309,76 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
           }
         });
         const indicatorResults = calculateIndicator(indicatorId, ohlcData, numericParameters);
-        
+
         if (indicatorResults.length === 0) return;
 
-        // Create line series for the indicator
-        if (!chartRef.current) return;
+        // Create line series for the indicator with additional safety checks
+        if (!chartRef.current) {
+          console.warn(`Chart reference is null when trying to add indicator: ${indicator.name}`);
+          return;
+        }
+
         const lineSeries = chartRef.current.addSeries(LineSeries, {
           color: indicator.color,
           lineWidth: 2,
           title: indicator.shortName,
         });
 
-        // Convert indicator results to chart format
-        const indicatorData = indicatorResults.map(result => ({
-          time: Math.floor(result.timestamp / 1000) as any,
-          value: typeof result.value === 'number' ? result.value : 
-                 (result.value as any).main || 
-                 Object.values(result.value as any)[0] || 0
-        }));
+        // Validate that the series was created successfully
+        if (!lineSeries) {
+          console.warn(`Failed to create line series for indicator: ${indicator.name}`);
+          return;
+        }
 
-        lineSeries.setData(indicatorData);
-        indicatorSeriesRef.current.set(indicator.id, lineSeries);
+        // Convert indicator results to chart format
+        const indicatorData = indicatorResults.map(result => {
+          let value = 0;
+
+          if (typeof result.value === 'number') {
+            value = result.value;
+          } else if (typeof result.value === 'object' && result.value !== null) {
+            // Handle specific indicator types
+            const valueObj = result.value as any;
+
+            if (indicatorId === 'supertrend') {
+              value = valueObj.supertrend || 0;
+            } else if (indicatorId === 'bb') {
+              value = valueObj.middle || valueObj.basis || 0;
+            } else if (indicatorId === 'macd') {
+              value = valueObj.macd || 0;
+            } else if (indicatorId === 'stoch') {
+              value = valueObj.k || 0;
+            } else if (indicatorId === 'adx') {
+              value = valueObj.adx || 0;
+            } else {
+              // Fallback: try common property names, then first value
+              value = valueObj.main || valueObj.value || valueObj.close ||
+                      Object.values(valueObj)[0] || 0;
+            }
+          }
+
+          return {
+            time: Math.floor(result.timestamp / 1000) as any,
+            value: value
+          };
+        });
+
+        // Set data with error handling
+        try {
+          lineSeries.setData(indicatorData);
+          // Only store the series reference if everything succeeded
+          indicatorSeriesRef.current.set(indicator.id, lineSeries);
+        } catch (dataError) {
+          console.error(`Error setting data for indicator ${indicator.name}:`, dataError);
+          // Clean up the series if data setting failed
+          try {
+            if (chartRef.current && lineSeries) {
+              chartRef.current.removeSeries(lineSeries);
+            }
+          } catch (cleanupError) {
+            console.warn(`Error cleaning up failed indicator series:`, cleanupError);
+          }
+        }
 
       } catch (error) {
         console.error(`Error adding indicator ${indicator.name} to chart:`, error);
@@ -322,8 +399,8 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
       `}</style>
       <div className="w-full h-full bg-black border border-zinc-800 rounded relative overflow-hidden">
         {/* Lightweight Charts Container */}
-        <div 
-          ref={chartContainerRef} 
+        <div
+          ref={chartContainerRef}
           className="w-full h-full"
           style={{ position: 'relative' }}
         />

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { getLatestPrice, getPriceChange, formatPrice } from "@/lib/chart-data";
-import { UserAccountDropdown } from "./user-account-dropdown";
+import { ProfileDropdown } from "./profile-dropdown";
 
 // Define symbol search types
 type SymbolData = {
@@ -76,7 +76,7 @@ const INDICATORS: Record<string, IndicatorType[]> = {
     { id: "dema", name: "Double Exponential Moving Average", description: "Double smoothed exponential moving average", category: "trend", parameters: { period: 20 } },
     { id: "kama", name: "Kaufman's Adaptive Moving Average", description: "Adaptive moving average based on market efficiency", category: "trend", parameters: { period: 20 } },
     { id: "alma", name: "Arnaud Legoux Moving Average", description: "Low-lag moving average with adjustable phase", category: "trend", parameters: { period: 20, offset: 0.85, sigma: 6 } },
-    
+
     // Momentum Oscillators
     { id: "rsi", name: "Relative Strength Index", description: "Momentum oscillator measuring speed and change of price movements", category: "momentum", parameters: { period: 14 } },
     { id: "stoch", name: "Stochastic Oscillator", description: "Compares closing price to price range over time", category: "momentum", parameters: { kPeriod: 14, dPeriod: 3 } },
@@ -89,7 +89,7 @@ const INDICATORS: Record<string, IndicatorType[]> = {
     { id: "ultimate_osc", name: "Ultimate Oscillator", description: "Uses three timeframes to reduce false signals", category: "momentum", parameters: { short: 7, medium: 14, long: 28 } },
     { id: "awesome_osc", name: "Awesome Oscillator", description: "Difference between 34-period and 5-period simple moving averages", category: "momentum", parameters: { fastPeriod: 5, slowPeriod: 34 } },
     { id: "ppo", name: "Percentage Price Oscillator", description: "MACD in percentage form", category: "momentum", parameters: { fastPeriod: 12, slowPeriod: 26 } },
-    
+
     // Volatility Indicators
     { id: "bb", name: "Bollinger Bands", description: "Price channels based on standard deviation", category: "volatility", parameters: { period: 20, stdDev: 2 } },
     { id: "atr", name: "Average True Range", description: "Measures market volatility", category: "volatility", parameters: { period: 14 } },
@@ -98,14 +98,14 @@ const INDICATORS: Record<string, IndicatorType[]> = {
     { id: "stddev", name: "Standard Deviation", description: "Measures price volatility", category: "volatility", parameters: { period: 20 } },
     { id: "bb_width", name: "Bollinger Band Width", description: "Measures the width of Bollinger Bands", category: "volatility", parameters: { period: 20, stdDev: 2 } },
     { id: "bb_percent", name: "Bollinger %B", description: "Shows where price is relative to Bollinger Bands", category: "volatility", parameters: { period: 20, stdDev: 2 } },
-    
+
     // Support/Resistance Indicators
     { id: "pivot", name: "Pivot Points", description: "Support and resistance levels", category: "support_resistance", parameters: { type: "standard" } },
     { id: "fibonacci", name: "Fibonacci Retracement", description: "Key retracement levels", category: "support_resistance", parameters: {} },
     { id: "sar", name: "Parabolic SAR", description: "Stop and reverse trend indicator", category: "support_resistance", parameters: { acceleration: 0.02, maximum: 0.2 } },
     { id: "zigzag", name: "ZigZag", description: "Filters out price movements below threshold", category: "support_resistance", parameters: { deviation: 5 } },
     { id: "support_resistance", name: "Support & Resistance", description: "Key price levels", category: "support_resistance", parameters: { period: 20 } },
-    
+
     // Additional Popular Indicators
     { id: "adx", name: "Average Directional Index", description: "Measures trend strength", category: "trend", parameters: { period: 14 } },
     { id: "aroon", name: "Aroon", description: "Identifies trend changes", category: "trend", parameters: { period: 14 } },
@@ -275,8 +275,8 @@ function IndicatorsSelector({
       <div
         ref={popupRef}
         className={`bg-black border-2 border-gray-700 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
-          isAnimating 
-            ? 'translate-y-0 opacity-100 scale-100' 
+          isAnimating
+            ? 'translate-y-0 opacity-100 scale-100'
             : 'translate-y-8 opacity-0 scale-95'
         }`}
         style={{
@@ -332,8 +332,8 @@ function IndicatorsSelector({
                 <div className="flex items-center justify-between">
                   <span className="transition-all duration-300 group-hover:text-gray-100">{category}</span>
                   <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    selectedCategory === category 
-                      ? "bg-gray-400" 
+                    selectedCategory === category
+                      ? "bg-gray-400"
                       : "bg-gray-600 group-hover:bg-gray-500"
                   }`}></div>
                 </div>
@@ -546,8 +546,8 @@ function TimeframeSelector({
     <div
       ref={popupRef}
       className={`fixed bg-black border-2 border-gray-700 rounded-xl shadow-2xl w-64 overflow-hidden transform transition-all duration-500 ease-out z-50 ${
-        isAnimating 
-          ? 'translate-y-0 opacity-100 scale-100' 
+        isAnimating
+          ? 'translate-y-0 opacity-100 scale-100'
           : 'translate-y-2 opacity-0 scale-95'
       }`}
       style={{
@@ -744,8 +744,8 @@ function SymbolSearchPopup({
       <div
         ref={popupRef}
         className={`bg-black border-2 border-gray-700 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
-          isAnimating 
-            ? 'translate-y-0 opacity-100 scale-100' 
+          isAnimating
+            ? 'translate-y-0 opacity-100 scale-100'
             : 'translate-y-8 opacity-0 scale-95'
         }`}
         style={{
@@ -1030,9 +1030,10 @@ type ChartHeaderProps = {
   onSymbolChange?: (symbol: string) => void;
   onTimeframeChange?: (timeframe: string) => void;
   onIndicatorAdd?: (indicator: IndicatorType) => void;
+  isCodeEditorActive?: boolean;
 };
 
-export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd }: ChartHeaderProps) {
+export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd, isCodeEditorActive }: ChartHeaderProps) {
   const [currentSymbol, setCurrentSymbol] = useState<SymbolData>(MOCK_SYMBOLS[0]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentTimeframe, setCurrentTimeframe] = useState("1m");
@@ -1073,8 +1074,33 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd 
   // Handle keyboard shortcut to open search
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      // Open search when user starts typing (letters/numbers only)
-      if (!isSearchOpen && /^[a-zA-Z0-9]$/.test(event.key) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      // Don't open search if code editor is active
+      if (isCodeEditorActive) {
+        return;
+      }
+
+      // Don't open search if user is typing in an input, textarea, or code editor
+      const target = event.target as HTMLElement;
+
+      // More comprehensive check for input elements
+      const isInInput = target.tagName === 'INPUT' ||
+                       target.tagName === 'TEXTAREA' ||
+                       target.contentEditable === 'true' ||
+                       target.isContentEditable ||
+                       target.closest('.cm-editor') || // CodeMirror editor
+                       target.closest('.cm-content') || // CodeMirror content area
+                       target.closest('.cm-line') || // CodeMirror line
+                       target.closest('[role="textbox"]') ||
+                       target.closest('.code-editor') ||
+                       target.closest('[data-editor="true"]');
+
+      // Open search when user starts typing (letters/numbers only) but not in input fields
+      if (!isSearchOpen &&
+          !isInInput &&
+          /^[a-zA-Z0-9]$/.test(event.key) &&
+          !event.ctrlKey &&
+          !event.metaKey &&
+          !event.altKey) {
         setIsSearchOpen(true);
       }
     }
@@ -1083,13 +1109,13 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isSearchOpen]);
+  }, [isSearchOpen, isCodeEditorActive]);
 
   return (
     <header className="h-[38px] bg-black border-b border-zinc-800 flex items-stretch px-0">
       {/* Left sidebar profile section - aligned with left sidebar width (52px) */}
       <div className="w-[52px] flex items-center justify-center">
-        <UserAccountDropdown />
+        <ProfileDropdown />
       </div>
 
       {/* Main header content */}
@@ -1118,7 +1144,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd 
               </svg>
               <span className="font-medium tracking-wide">{currentSymbol.symbol}</span>
             </div>
-            
+
             {/* Price and Change Display */}
             {isClient && (
               <div className="flex items-center gap-2 text-xs">
@@ -1126,8 +1152,8 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd 
                   {formatPrice(getLatestPrice(currentSymbol.symbol, currentTimeframe), currentSymbol.symbol)}
                 </span>
                 <span className={`font-medium px-1.5 py-0.5 rounded ${
-                  getPriceChange(currentSymbol.symbol, currentTimeframe).change >= 0 
-                    ? 'text-green-400 bg-green-900 bg-opacity-30' 
+                  getPriceChange(currentSymbol.symbol, currentTimeframe).change >= 0
+                    ? 'text-green-400 bg-green-900 bg-opacity-30'
                     : 'text-red-400 bg-red-900 bg-opacity-30'
                 }`}>
                   {getPriceChange(currentSymbol.symbol, currentTimeframe).change >= 0 ? '+' : ''}

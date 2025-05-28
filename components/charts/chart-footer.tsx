@@ -12,11 +12,11 @@ interface ChartFooterProps {
 export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: ChartFooterProps) {
 
   return (
-    <footer className="h-full bg-black border border-zinc-800 rounded flex items-center justify-start px-4 text-xs">
+    <footer className="h-full bg-black border border-zinc-800 rounded flex items-center justify-start px-4 text-xs relative z-20">
       {/* Tool tabs like TradingView - aligned to left with capsule styling */}
       <div className="flex items-center gap-2 relative">
         {/* Brokers Tab */}
-        <motion.button 
+        <motion.button
           onClick={() => {
             if (isDrawerOpen && activeTab === "brokers") {
               onClose();
@@ -40,7 +40,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
-          
+
           <div className="relative flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +62,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
             </svg>
             <span className="font-medium">Brokers</span>
           </div>
-          
+
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "brokers" && (
             <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
@@ -70,7 +70,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
         </motion.button>
 
         {/* Code Editor Tab */}
-        <motion.button 
+        <motion.button
           onClick={() => {
             if (isDrawerOpen && activeTab === "code-editor") {
               onClose();
@@ -94,7 +94,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
-          
+
           <div className="relative flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -113,9 +113,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               <polyline points="16 18 22 12 16 6"></polyline>
               <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
-            <span className="font-medium">Code Editor</span>
+            <span className="font-medium">Algo Script</span>
           </div>
-          
+
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "code-editor" && (
             <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
@@ -123,7 +123,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
         </motion.button>
 
         {/* Strategy Tester Tab */}
-        <motion.button 
+        <motion.button
           onClick={() => {
             if (isDrawerOpen && activeTab === "strategy-tester") {
               onClose();
@@ -147,7 +147,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
-          
+
           <div className="relative flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +168,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
             </svg>
             <span className="font-medium">Strategy Tester</span>
           </div>
-          
+
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "strategy-tester" && (
             <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
@@ -176,7 +176,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
         </motion.button>
 
         {/* HFT Panel Tab */}
-        <motion.button 
+        <motion.button
           onClick={() => {
             if (isDrawerOpen && activeTab === "hft-panel") {
               onClose();
@@ -200,7 +200,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
-          
+
           <div className="relative flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -220,7 +220,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
             </svg>
             <span className="font-medium">HFT Panel</span>
           </div>
-          
+
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "hft-panel" && (
             <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
@@ -228,7 +228,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
         </motion.button>
 
         {/* Stocks Screener Tab */}
-        <motion.button 
+        <motion.button
           onClick={() => {
             if (isDrawerOpen && activeTab === "stocks-screener") {
               onClose();
@@ -252,7 +252,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
-          
+
           <div className="relative flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -273,7 +273,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
             </svg>
             <span className="font-medium">Stocks Screener</span>
           </div>
-          
+
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "stocks-screener" && (
             <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>

@@ -4,14 +4,35 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { authService } from '@/lib/auth'
 import { UserWithProfile } from '@/lib/types'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { User, LogOut, Settings, ChevronDown } from 'lucide-react'
+
+// Helper function to get user initials
+// const getUserInitials = (user: UserWithProfile): string => {
+//   if (user.full_name) {
+//     return user.full_name
+//       .split(' ')
+//       .map(name => name.charAt(0))
+//       .join('')
+//       .toUpperCase()
+//       .slice(0, 2);
+//   }
+//   if (user.email) {
+//     return user.email.charAt(0).toUpperCase();
+//   }
+//   return 'U';
+// };
+
+// Helper function to get user display name
+// const getUserDisplayName = (user: UserWithProfile): string => {
+//   return user.full_name || user.email?.split('@')[0] || 'User';
+// };
 
 export function UserAccountDropdown() {
   const [user, setUser] = useState<UserWithProfile | null>(null)
@@ -46,16 +67,17 @@ export function UserAccountDropdown() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 py-1 px-2 text-sm text-white">
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-        <span>Loading...</span>
+      <div className="flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center">
+          <div className="w-4 h-4 animate-spin rounded-full border-2 border-zinc-400 border-t-transparent"></div>
+        </div>
       </div>
     )
   }
 
   if (!user) {
     return (
-      <button 
+      <button
         onClick={() => router.push('/auth/login')}
         className="flex items-center gap-2 py-1 px-2 text-sm text-white hover:bg-gray-800 rounded"
       >
@@ -80,7 +102,7 @@ export function UserAccountDropdown() {
           <p className="text-xs text-gray-400 truncate">{user.email}</p>
         </div>
         <DropdownMenuSeparator className="bg-gray-700 my-1" />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="cursor-pointer flex items-center gap-2 py-2 hover:bg-gray-800"
           onClick={() => router.push('/profile')}
         >
@@ -88,7 +110,7 @@ export function UserAccountDropdown() {
           <span>Profile Settings</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-gray-700 my-1" />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="cursor-pointer flex items-center gap-2 py-2 text-red-400 hover:bg-gray-800"
           onClick={handleSignOut}
         >
