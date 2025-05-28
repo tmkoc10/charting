@@ -1,12 +1,19 @@
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email TEXT UNIQUE,
+  email TEXT,
   full_name TEXT,
   avatar_url TEXT,
+  username TEXT UNIQUE,
+  bio TEXT,
+  website TEXT,
+  location TEXT,
   provider TEXT,
+  provider_id TEXT,
+  metadata JSONB DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT profiles_email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
 -- Enable Row Level Security
@@ -22,16 +29,19 @@ CREATE POLICY "Users can update their own profile"
   USING (auth.uid() = id);
 
 -- Create a trigger function to create a profile when a new user signs up
-CREATE OR REPLACE FUNCTION public.handle_new_user() 
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, full_name, avatar_url, provider)
+  INSERT INTO public.profiles (id, email, full_name, avatar_url, username, provider, provider_id, metadata)
   VALUES (
     NEW.id,
     NEW.email,
     NEW.raw_user_meta_data->>'full_name',
     NEW.raw_user_meta_data->>'avatar_url',
-    NEW.raw_app_meta_data->>'provider'
+    NEW.raw_user_meta_data->>'user_name',
+    NEW.raw_app_meta_data->>'provider',
+    NEW.raw_app_meta_data->>'provider_id',
+    COALESCE(NEW.raw_user_meta_data, '{}')
   );
   RETURN NEW;
 END;

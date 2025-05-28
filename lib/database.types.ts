@@ -15,7 +15,13 @@ export interface Database {
           email: string | null
           full_name: string | null
           avatar_url: string | null
+          username: string | null
+          bio: string | null
+          website: string | null
+          location: string | null
           provider: string | null
+          provider_id: string | null
+          metadata: Json
           created_at: string
           updated_at: string
         }
@@ -24,7 +30,13 @@ export interface Database {
           email?: string | null
           full_name?: string | null
           avatar_url?: string | null
+          username?: string | null
+          bio?: string | null
+          website?: string | null
+          location?: string | null
           provider?: string | null
+          provider_id?: string | null
+          metadata?: Json
           created_at?: string
           updated_at?: string
         }
@@ -33,7 +45,13 @@ export interface Database {
           email?: string | null
           full_name?: string | null
           avatar_url?: string | null
+          username?: string | null
+          bio?: string | null
+          website?: string | null
+          location?: string | null
           provider?: string | null
+          provider_id?: string | null
+          metadata?: Json
           created_at?: string
           updated_at?: string
         }
