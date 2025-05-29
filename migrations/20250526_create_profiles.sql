@@ -19,14 +19,43 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- Enable Row Level Security
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Create policies
-CREATE POLICY "Users can view their own profile" 
-  ON public.profiles FOR SELECT 
+-- Create comprehensive RLS policies
+-- Allow anonymous users to view profiles (for public profile pages)
+CREATE POLICY "Anonymous users can view profiles"
+  ON public.profiles FOR SELECT
+  TO anon
+  USING (true);
+
+-- Allow authenticated users to view all profiles
+CREATE POLICY "Authenticated users can view profiles"
+  ON public.profiles FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Allow authenticated users to insert their own profile
+CREATE POLICY "Authenticated users can insert own profile"
+  ON public.profiles FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = id);
+
+-- Allow authenticated users to update their own profile
+CREATE POLICY "Authenticated users can update own profile"
+  ON public.profiles FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
+
+-- Allow authenticated users to delete their own profile
+CREATE POLICY "Authenticated users can delete own profile"
+  ON public.profiles FOR DELETE
+  TO authenticated
   USING (auth.uid() = id);
 
-CREATE POLICY "Users can update their own profile" 
-  ON public.profiles FOR UPDATE 
-  USING (auth.uid() = id);
+-- Allow service role to insert profiles (for triggers)
+CREATE POLICY "Service role can insert profiles"
+  ON public.profiles FOR INSERT
+  TO service_role
+  WITH CHECK (true);
 
 -- Create a trigger function to create a profile when a new user signs up
 CREATE OR REPLACE FUNCTION public.handle_new_user()

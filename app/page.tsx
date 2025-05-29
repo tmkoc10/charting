@@ -1,34 +1,49 @@
 import { NavbarDemo } from "@/components/navbar-demo";
-import { HeroScrollDemo } from "@/components/hero-scroll-demo";
-import { FeaturesSection } from "@/components/features-section";
-import { WorldMapSection } from "@/components/world-map-section";
-import { WobbleCardSection } from "@/components/wobble-card-section";
-import { PricingSection } from "@/components/pricing-section";
-import { FooterSection } from "@/components/footer-section";
+import {
+  LazyHeroScrollDemo,
+  LazyFeaturesSection,
+  LazyWorldMapSection,
+  LazyWobbleCardSection,
+  LazyPricingSection,
+  LazyFooterSection,
+  LazySection,
+} from "@/components/lazy-components";
 
 export default function Home() {
   return (
     <div className="relative w-full">
-      {/* Navigation Bar */}
+      {/* Navigation Bar - Keep this loaded immediately for UX */}
       <NavbarDemo />
 
-      {/* Hero Section */}
-      <HeroScrollDemo />
+      {/* Hero Section - Lazy load but prioritize */}
+      <LazySection>
+        <LazyHeroScrollDemo />
+      </LazySection>
 
-      {/* Features Section */}
-      <FeaturesSection />
+      {/* Features Section - Keep SSR for SEO */}
+      <LazySection>
+        <LazyFeaturesSection />
+      </LazySection>
 
-      {/* World Map Section */}
-      <WorldMapSection />
+      {/* World Map Section - Lazy load (heavy interactive component) */}
+      <LazySection>
+        <LazyWorldMapSection />
+      </LazySection>
 
-      {/* Wobble Card Section */}
-      <WobbleCardSection />
+      {/* Wobble Card Section - Lazy load (heavy animations) */}
+      <LazySection>
+        <LazyWobbleCardSection />
+      </LazySection>
 
-      {/* Pricing Section */}
-      <PricingSection />
+      {/* Pricing Section - Keep SSR for business content */}
+      <LazySection>
+        <LazyPricingSection />
+      </LazySection>
 
-      {/* Footer Section */}
-      <FooterSection />
+      {/* Footer Section - Keep SSR for SEO */}
+      <LazySection>
+        <LazyFooterSection />
+      </LazySection>
     </div>
   );
 }

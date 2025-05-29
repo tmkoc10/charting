@@ -1,0 +1,31 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="#000000"/>
+  <rect x="16" y="16" width="160" height="160" rx="16" fill="#1a1a1a"/>
+  
+  <!-- Chart lines representing trading data -->
+  <path d="M32 120 L48 100 L64 110 L80 85 L96 95 L112 70 L128 80 L144 55 L160 65" 
+        stroke="#22c55e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <path d="M32 140 L48 130 L64 145 L80 125 L96 135 L112 115 L128 125 L144 105 L160 115" 
+        stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Candlestick representation -->
+  <rect x="40" y="90" width="4" height="20" fill="#22c55e"/>
+  <rect x="72" y="100" width="4" height="15" fill="#ef4444"/>
+  <rect x="104" y="80" width="4" height="25" fill="#22c55e"/>
+  <rect x="136" y="95" width="4" height="18" fill="#ef4444"/>
+  
+  <!-- Vertical lines for candlesticks -->
+  <line x1="42" y1="85" x2="42" y2="115" stroke="#22c55e" stroke-width="1"/>
+  <line x1="74" y1="95" x2="74" y2="120" stroke="#ef4444" stroke-width="1"/>
+  <line x1="106" y1="75" x2="106" y2="110" stroke="#22c55e" stroke-width="1"/>
+  <line x1="138" y1="90" x2="138" y2="118" stroke="#ef4444" stroke-width="1"/>
+  
+  <!-- Logo text -->
+  <text x="96" y="150" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="bold">
+    TRADING
+  </text>
+  <text x="96" y="168" text-anchor="middle" fill="#888888" font-family="Arial, sans-serif" font-size="12">
+    PLATFORM
+  </text>
+</svg>

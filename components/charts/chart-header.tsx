@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { getLatestPrice, getPriceChange, formatPrice } from "@/lib/chart-data";
 import { ProfileDropdown } from "./profile-dropdown";
+import { createClient } from "@/lib/client";
 
 // Define symbol search types
 type SymbolData = {
@@ -14,9 +15,28 @@ type SymbolData = {
   category: string;
 };
 
-// Categories for filtering
+// Database result types
+type EquitySymbol = {
+  SECURITY_ID: string;
+  EXCHANGE_SEGMENT: string;
+  DISPLAY_NAME: string;
+};
+
+type IndexSymbol = {
+  SECURITY_ID: string;
+  EXCHANGE_SEGMENT: string;
+  DISPLAY_NAME: string;
+};
+
+type OptionSymbol = {
+  SECURITY_ID: number;
+  EXCHANGE_SEGMENT: string;
+  DISPLAY_NAME: string;
+};
+
+// Categories for filtering - updated to match actual data
 const CATEGORIES = [
-  "All", "Stocks", "Funds", "Futures", "Forex", "Crypto", "Indices", "Bonds", "Economy", "Options"
+  "All", "Equity", "Indices", "Options"
 ];
 
 // Timeframe data structure
@@ -139,49 +159,193 @@ const INDICATORS: Record<string, IndicatorType[]> = {
   ],
 };
 
-// Mock data for demonstration - in a real app, this would come from an API
-const MOCK_SYMBOLS: SymbolData[] = [
-  // Indian Indices
-  { symbol: "NIFTY", name: "NIFTY 50 INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "NIFTY", name: "GIFT NIFTY 50 INDEX FUTURES", type: "Futures", exchange: "NSEIX", category: "Futures" },
-  { symbol: "NIFTY", name: "S&P CNX NIFTY INDEX FUTURES", type: "Futures", exchange: "NSE", category: "Futures" },
-  { symbol: "BANKNIFTY", name: "NIFTY BANK INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "CNXFINANCE", name: "NIFTY FINANCIAL SERVICES INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "NIFTY_MID_SELECT", name: "NIFTY MIDCAP SELECT INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "CNXIT", name: "NIFTY IT INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "CNX500", name: "NIFTY 500 INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "CNXSMALLCAP", name: "NIFTY SMALLCAP 100 INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "CNXAUTO", name: "NIFTY AUTO INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "CNXFMCG", name: "NIFTY FMCG INDEX", type: "Index", exchange: "NSE", category: "Indices" },
-  { symbol: "CNXPHARMA", name: "NIFTY PHARMA INDEX", type: "Index", exchange: "NSE", category: "Indices" },
+// Custom hook to fetch symbols from Supabase
+function useSymbolSearch() {
+  const [symbols, setSymbols] = useState<SymbolData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // US Stocks
-  { symbol: "AAPL", name: "Apple Inc", type: "Stock", exchange: "NASDAQ", category: "Stocks" },
-  { symbol: "MSFT", name: "Microsoft Corporation", type: "Stock", exchange: "NASDAQ", category: "Stocks" },
-  { symbol: "GOOGL", name: "Alphabet Inc", type: "Stock", exchange: "NASDAQ", category: "Stocks" },
-  { symbol: "AMZN", name: "Amazon.com Inc", type: "Stock", exchange: "NASDAQ", category: "Stocks" },
-  { symbol: "TSLA", name: "Tesla Inc", type: "Stock", exchange: "NASDAQ", category: "Stocks" },
-  { symbol: "NVDA", name: "NVIDIA Corporation", type: "Stock", exchange: "NASDAQ", category: "Stocks" },
-  { symbol: "META", name: "Meta Platforms Inc", type: "Stock", exchange: "NASDAQ", category: "Stocks" },
+  const fetchSymbols = useCallback(async (searchTerm: string = "", category: string = "All") => {
+    // Only skip fetching if no search term AND "All" category is selected
+    if (!searchTerm.trim() && category === "All") {
+      setSymbols([]);
+      return;
+    }
 
-  // Crypto
-  { symbol: "BTC", name: "Bitcoin", type: "Crypto", exchange: "CRYPTO", category: "Crypto" },
-  { symbol: "ETH", name: "Ethereum", type: "Crypto", exchange: "CRYPTO", category: "Crypto" },
-  { symbol: "XRP", name: "Ripple", type: "Crypto", exchange: "CRYPTO", category: "Crypto" },
+    setLoading(true);
+    setError(null);
 
-  // Forex
-  { symbol: "EURUSD", name: "Euro / US Dollar", type: "Currency", exchange: "FOREX", category: "Forex" },
-  { symbol: "GBPUSD", name: "British Pound / US Dollar", type: "Currency", exchange: "FOREX", category: "Forex" },
-  { symbol: "USDJPY", name: "US Dollar / Japanese Yen", type: "Currency", exchange: "FOREX", category: "Forex" },
+    try {
+      const supabase = createClient();
+      const results: SymbolData[] = [];
 
-  // Funds
-  { symbol: "SPY", name: "SPDR S&P 500 ETF Trust", type: "ETF", exchange: "NYSE", category: "Funds" },
-  { symbol: "QQQ", name: "Invesco QQQ Trust", type: "ETF", exchange: "NASDAQ", category: "Funds" },
+      // Helper function to map database results to SymbolData
+      const mapEquityToSymbol = (equity: EquitySymbol): SymbolData => ({
+        symbol: equity.SECURITY_ID,
+        name: equity.DISPLAY_NAME,
+        type: "Equity",
+        exchange: equity.EXCHANGE_SEGMENT,
+        category: "Equity"
+      });
 
-  // Bonds
-  { symbol: "TLT", name: "iShares 20+ Year Treasury Bond ETF", type: "Bond ETF", exchange: "NASDAQ", category: "Bonds" },
-  { symbol: "IEF", name: "iShares 7-10 Year Treasury Bond ETF", type: "Bond ETF", exchange: "NASDAQ", category: "Bonds" }
-];
+      const mapIndexToSymbol = (index: IndexSymbol): SymbolData => ({
+        symbol: index.SECURITY_ID,
+        name: index.DISPLAY_NAME,
+        type: "Index",
+        exchange: index.EXCHANGE_SEGMENT,
+        category: "Indices"
+      });
+
+      const mapOptionToSymbol = (option: OptionSymbol): SymbolData => ({
+        symbol: option.SECURITY_ID.toString(),
+        name: option.DISPLAY_NAME,
+        type: "Option",
+        exchange: option.EXCHANGE_SEGMENT,
+        category: "Options"
+      });
+
+      // Fetch from equity table
+      if (category === "All" || category === "Equity") {
+        try {
+          let equityQuery = supabase
+            .from('nse_equity_symbols')
+            .select('SECURITY_ID, EXCHANGE_SEGMENT, DISPLAY_NAME');
+
+          if (searchTerm.trim()) {
+            equityQuery = equityQuery.or(`SECURITY_ID.ilike.%${searchTerm}%,DISPLAY_NAME.ilike.%${searchTerm}%`);
+          } else {
+            // If no search term but category is selected, get some popular symbols
+            equityQuery = equityQuery.limit(20);
+          }
+
+          const { data: equityData, error: equityError } = await equityQuery.limit(50);
+
+          if (equityError) {
+            console.error('Equity query error:', equityError);
+          } else if (equityData) {
+            results.push(...equityData.map(mapEquityToSymbol));
+          }
+        } catch (equityError) {
+          console.error('Equity query failed:', equityError);
+        }
+      }
+
+      // Fetch from indices table
+      if (category === "All" || category === "Indices") {
+        try {
+          let indicesQuery = supabase
+            .from('nse_indices')
+            .select('SECURITY_ID, EXCHANGE_SEGMENT, DISPLAY_NAME');
+
+          if (searchTerm.trim()) {
+            indicesQuery = indicesQuery.or(`SECURITY_ID.ilike.%${searchTerm}%,DISPLAY_NAME.ilike.%${searchTerm}%`);
+          } else {
+            // If no search term but category is selected, get all indices (they're limited)
+            indicesQuery = indicesQuery.limit(20);
+          }
+
+          const { data: indicesData, error: indicesError } = await indicesQuery.limit(50);
+
+          if (indicesError) {
+            console.error('Indices query error:', indicesError);
+          } else if (indicesData) {
+            results.push(...indicesData.map(mapIndexToSymbol));
+          }
+        } catch (indicesError) {
+          console.error('Indices query failed:', indicesError);
+        }
+      }
+
+      // Fetch from options table
+      if (category === "All" || category === "Options") {
+        try {
+          const optionsQuery = supabase
+            .from('nse_options')
+            .select('SECURITY_ID, EXCHANGE_SEGMENT, DISPLAY_NAME');
+
+          if (searchTerm.trim()) {
+            // Use separate queries for SECURITY_ID and DISPLAY_NAME to avoid casting issues
+            const [securityIdResults, displayNameResults] = await Promise.all([
+              supabase
+                .from('nse_options')
+                .select('SECURITY_ID, EXCHANGE_SEGMENT, DISPLAY_NAME')
+                .eq('SECURITY_ID', parseInt(searchTerm) || -1)
+                .limit(25),
+              supabase
+                .from('nse_options')
+                .select('SECURITY_ID, EXCHANGE_SEGMENT, DISPLAY_NAME')
+                .ilike('DISPLAY_NAME', `%${searchTerm}%`)
+                .limit(25)
+            ]);
+
+            const combinedResults = [
+              ...(securityIdResults.data || []),
+              ...(displayNameResults.data || [])
+            ];
+
+            // Remove duplicates based on SECURITY_ID
+            const uniqueResults = combinedResults.filter((item, index, self) =>
+              index === self.findIndex(t => t.SECURITY_ID === item.SECURITY_ID)
+            );
+
+            if (securityIdResults.error) console.error('Options SECURITY_ID query error:', securityIdResults.error);
+            if (displayNameResults.error) console.error('Options DISPLAY_NAME query error:', displayNameResults.error);
+
+            if (uniqueResults.length > 0) {
+              results.push(...uniqueResults.map(mapOptionToSymbol));
+            }
+          } else {
+            // If no search term but category is selected, get some recent options
+            const { data: optionsData, error: optionsError } = await optionsQuery.limit(20);
+
+            if (optionsError) {
+              console.error('Options query error:', optionsError);
+            } else if (optionsData) {
+              results.push(...optionsData.map(mapOptionToSymbol));
+            }
+          }
+        } catch (optionsError) {
+          console.error('Options query failed:', optionsError);
+          // Don't throw here, just log and continue with other results
+        }
+      }
+
+      // Sort results by relevance (exact matches first, then partial matches)
+      const sortedResults = results.sort((a, b) => {
+        const aExactSymbol = a.symbol.toLowerCase() === searchTerm.toLowerCase();
+        const bExactSymbol = b.symbol.toLowerCase() === searchTerm.toLowerCase();
+        const aExactName = a.name.toLowerCase() === searchTerm.toLowerCase();
+        const bExactName = b.name.toLowerCase() === searchTerm.toLowerCase();
+
+        if (aExactSymbol && !bExactSymbol) return -1;
+        if (!aExactSymbol && bExactSymbol) return 1;
+        if (aExactName && !bExactName) return -1;
+        if (!aExactName && bExactName) return 1;
+
+        return a.symbol.localeCompare(b.symbol);
+      });
+
+      setSymbols(sortedResults);
+    } catch (err) {
+      console.error('Error fetching symbols:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch symbols');
+      setSymbols([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { symbols, loading, error, fetchSymbols };
+}
+
+// Default symbol for initial state
+const DEFAULT_SYMBOL: SymbolData = {
+  symbol: "NIFTY",
+  name: "NIFTY 50 INDEX",
+  type: "Index",
+  exchange: "NSE",
+  category: "Indices"
+};
 
 // Indicators Selector Component
 function IndicatorsSelector({
@@ -658,32 +822,19 @@ function SymbolSearchPopup({
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [filteredSymbols, setFilteredSymbols] = useState<SymbolData[]>(MOCK_SYMBOLS);
   const [isAnimating, setIsAnimating] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { symbols, loading, error, fetchSymbols } = useSymbolSearch();
 
-  // Filter symbols based on search term and category
+  // Debounced search effect
   useEffect(() => {
-    let filtered = MOCK_SYMBOLS;
+    const timeoutId = setTimeout(() => {
+      fetchSymbols(searchTerm, selectedCategory);
+    }, 300); // 300ms debounce
 
-    // Filter by category
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter(symbol => symbol.category === selectedCategory);
-    }
-
-    // Filter by search term
-    if (searchTerm.trim() !== "") {
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (symbol) =>
-          symbol.symbol.toLowerCase().includes(lowerSearchTerm) ||
-          symbol.name.toLowerCase().includes(lowerSearchTerm)
-      );
-    }
-
-    setFilteredSymbols(filtered);
-  }, [searchTerm, selectedCategory]);
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, selectedCategory, fetchSymbols]);
 
   // Focus input when popup opens with animation
   useEffect(() => {
@@ -853,9 +1004,26 @@ function SymbolSearchPopup({
 
         {/* Symbol List */}
         <div className="flex-1 overflow-y-auto scrollbar-black" style={{ height: '320px' }}>
-          {filteredSymbols.length > 0 ? (
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500 mx-auto mb-4"></div>
+              <div className="text-lg mb-2 font-medium">Searching symbols...</div>
+              <div className="text-sm">Please wait while we fetch the results</div>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center text-red-400">
+              <div className="text-lg mb-2 font-medium">Error loading symbols</div>
+              <div className="text-sm">{error}</div>
+              <button
+                onClick={() => fetchSymbols(searchTerm, selectedCategory)}
+                className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : symbols.length > 0 ? (
             <div>
-              {filteredSymbols.map((item, index) => (
+              {symbols.map((item, index) => (
                 <div
                   key={`${item.symbol}-${item.exchange}-${index}`}
                   onClick={() => onSelect(item)}
@@ -904,10 +1072,15 @@ function SymbolSearchPopup({
                 </div>
               ))}
             </div>
-          ) : (
+          ) : searchTerm.trim() || selectedCategory !== "All" ? (
             <div className="p-8 text-center text-gray-500 animate-pulse">
               <div className="text-lg mb-2 font-medium">No symbols found</div>
               <div className="text-sm">Try adjusting your search or category filter</div>
+            </div>
+          ) : (
+            <div className="p-8 text-center text-gray-500">
+              <div className="text-lg mb-2 font-medium">Start typing to search</div>
+              <div className="text-sm">Enter a symbol name or select a category to begin</div>
             </div>
           )}
         </div>
@@ -928,6 +1101,12 @@ function getSymbolIcon(symbol: SymbolData): string {
   }
   if (symbol.category === "Indices") {
     return "📊";
+  }
+  if (symbol.category === "Equity") {
+    return symbol.symbol.charAt(0);
+  }
+  if (symbol.category === "Options") {
+    return "⚡";
   }
   if (symbol.category === "Futures") {
     return "📈";
@@ -953,7 +1132,11 @@ function getSymbolIcon(symbol: SymbolData): string {
 function getSymbolIconStyle(category: string): string {
   switch (category) {
     case "Indices":
-      return "bg-gray-700 text-gray-200 border border-gray-600";
+      return "bg-blue-700 text-blue-200 border border-blue-600";
+    case "Equity":
+      return "bg-green-700 text-green-200 border border-green-600";
+    case "Options":
+      return "bg-purple-700 text-purple-200 border border-purple-600";
     case "Futures":
       return "bg-gray-900 text-gray-300 border border-gray-700";
     case "Stocks":
@@ -1034,7 +1217,7 @@ type ChartHeaderProps = {
 };
 
 export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd, isCodeEditorActive }: ChartHeaderProps) {
-  const [currentSymbol, setCurrentSymbol] = useState<SymbolData>(MOCK_SYMBOLS[0]);
+  const [currentSymbol, setCurrentSymbol] = useState<SymbolData>(DEFAULT_SYMBOL);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentTimeframe, setCurrentTimeframe] = useState("1m");
   const [isTimeframeOpen, setIsTimeframeOpen] = useState(false);

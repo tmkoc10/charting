@@ -269,7 +269,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               }`}
             >
               <circle cx="11" cy="11" r="8"></circle>
-              <path d="21 21l-4.35-4.35"></path>
+              <path d="M21 21l-4.35-4.35"></path>
             </svg>
             <span className="font-medium">Stocks Screener</span>
           </div>

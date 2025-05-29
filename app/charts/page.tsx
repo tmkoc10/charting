@@ -1,7 +1,7 @@
 "use client";
 
-import { ChartLayout } from "@/components/charts/chart-layout";
+import { LazyChartLayout } from "@/components/lazy-components";
 
 export default function ChartsPage() {
-  return <ChartLayout />;
+  return <LazyChartLayout />;
 }

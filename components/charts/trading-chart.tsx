@@ -4,9 +4,10 @@
 
 import { useEffect, useRef } from "react";
 import { createChart, ColorType, CandlestickSeries, LineSeries, IChartApi, ISeriesApi } from "lightweight-charts";
-import { getChartData } from "@/lib/chart-data";
+import { useChartDataQuery } from "@/lib/query-client";
 import { AppliedIndicator } from "./indicator-legend";
 import { calculateIndicator } from "@/lib/indicators";
+import { PerformanceWrapper } from "@/lib/performance";
 
 interface TradingChartProps {
   isCrosshairMode: boolean;
@@ -20,6 +21,9 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const indicatorSeriesRef = useRef<Map<string, ISeriesApi<"Line">>>(new Map());
+
+  // Use React Query for cached chart data
+  const { data: chartData, isLoading, error } = useChartDataQuery(symbol, timeframe);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -129,19 +133,19 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
 
     seriesRef.current = candlestickSeries;
 
-    // Get chart data for the current symbol and timeframe
-    const chartData = getChartData(symbol, timeframe);
+    // Load chart data from React Query cache or fetch if needed
+    if (chartData && chartData.length > 0) {
+      // Convert our data format to LightweightCharts format
+      const sampleData = chartData.map(candle => ({
+        time: Math.floor(candle.time / 1000) as any, // Convert to seconds for LightweightCharts
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+      }));
 
-    // Convert our data format to LightweightCharts format
-    const sampleData = chartData.map(candle => ({
-      time: Math.floor(candle.time / 1000) as any, // Convert to seconds for LightweightCharts
-      open: candle.open,
-      high: candle.high,
-      low: candle.low,
-      close: candle.close,
-    }));
-
-    candlestickSeries.setData(sampleData);
+      candlestickSeries.setData(sampleData);
+    }
 
     // Hide TradingView watermark/logo
     setTimeout(() => {
@@ -190,28 +194,33 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
       resizeObserver.disconnect();
 
       // Clean up indicator series before removing the chart
-      indicatorSeriesRef.current.forEach((series, key) => {
+      // Copy the current ref value to avoid stale closure issues
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const currentIndicatorSeries = indicatorSeriesRef.current;
+      const currentChart = chartRef.current;
+
+      currentIndicatorSeries.forEach((series, key) => {
         try {
-          if (chartRef.current && series) {
-            chartRef.current.removeSeries(series);
+          if (currentChart && series) {
+            currentChart.removeSeries(series);
           }
         } catch (error) {
           console.warn(`Error removing indicator series ${key} during cleanup:`, error);
         }
       });
-      indicatorSeriesRef.current.clear();
+      currentIndicatorSeries.clear();
 
       // Remove the chart
-      if (chartRef.current) {
+      if (currentChart) {
         try {
-          chartRef.current.remove();
+          currentChart.remove();
         } catch (error) {
           console.warn('Error removing chart during cleanup:', error);
         }
         chartRef.current = null;
       }
     };
-  }, [symbol, timeframe]);
+  }, [symbol, timeframe, chartData]);
 
   // Update crosshair visibility when mode changes
   useEffect(() => {
@@ -240,10 +249,9 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
 
   // Update chart data when symbol or timeframe changes
   useEffect(() => {
-    if (seriesRef.current) {
+    if (seriesRef.current && chartData && chartData.length > 0) {
       try {
-        const newChartData = getChartData(symbol, timeframe);
-        const newData = newChartData.map(candle => ({
+        const newData = chartData.map(candle => ({
           time: Math.floor(candle.time / 1000) as any,
           open: candle.open,
           high: candle.high,
@@ -255,7 +263,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
         console.error('Error updating chart data:', error);
       }
     }
-  }, [symbol, timeframe]);
+  }, [symbol, timeframe, chartData]);
 
   // Update indicators when appliedIndicators changes
   useEffect(() => {
@@ -279,10 +287,8 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
       if (!indicator.visible) return;
 
       try {
-        // Get chart data for calculations
-        const chartData = getChartData(symbol, timeframe);
-
-        if (chartData.length === 0) return;
+        // Use cached chart data for calculations
+        if (!chartData || chartData.length === 0) return;
 
         // Convert chart data to OHLC format for indicator calculation
         const ohlcData = chartData.map(candle => ({
@@ -384,10 +390,34 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
         console.error(`Error adding indicator ${indicator.name} to chart:`, error);
       }
     });
-  }, [appliedIndicators, symbol, timeframe]);
+  }, [appliedIndicators, symbol, timeframe, chartData]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="w-full h-full bg-black border border-zinc-800 rounded relative overflow-hidden flex items-center justify-center">
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-800 rounded mb-4 w-32"></div>
+          <div className="h-64 bg-gray-800 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="w-full h-full bg-black border border-zinc-800 rounded relative overflow-hidden flex items-center justify-center">
+        <div className="text-red-400 text-center">
+          <div className="text-lg mb-2">Failed to load chart data</div>
+          <div className="text-sm opacity-75">Please try again later</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
+    <PerformanceWrapper name="TradingChart">
       {/* CSS to hide TradingView watermark */}
       <style jsx global>{`
         a[href*="tradingview.com"] {
@@ -405,6 +435,6 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
           style={{ position: 'relative' }}
         />
       </div>
-    </>
+    </PerformanceWrapper>
   );
 }
