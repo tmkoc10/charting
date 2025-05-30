@@ -22,7 +22,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
-          className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
             activeTab === tab.id
               ? 'bg-white text-black'
               : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white'

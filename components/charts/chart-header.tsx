@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
 import { getLatestPrice, getPriceChange, formatPrice } from "@/lib/chart-data";
 import { ProfileDropdown } from "./profile-dropdown";
 import { createClient } from "@/lib/client";
@@ -1303,11 +1304,13 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
 
       {/* Main header content */}
       <div className="flex-1 flex items-center">
-        {/* Symbol Search section - capsule shaped button */}
+        {/* Symbol Search section - square shaped button */}
         <div className="h-full flex items-center">
-          <button
+          <motion.button
             onClick={() => setIsSearchOpen(true)}
-            className="flex items-center gap-3 px-4 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-full text-sm"
+            className="flex items-center gap-3 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 rounded-md text-sm"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <div className="flex items-center gap-2">
               <svg
@@ -1334,7 +1337,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
                 <span className="font-semibold text-white">
                   {formatPrice(getLatestPrice(currentSymbol.symbol, currentTimeframe), currentSymbol.symbol)}
                 </span>
-                <span className={`font-medium px-1.5 py-0.5 rounded ${
+                <span className={`font-medium px-1.5 py-0.5 ${
                   getPriceChange(currentSymbol.symbol, currentTimeframe).change >= 0
                     ? 'text-green-400 bg-green-900 bg-opacity-30'
                     : 'text-red-400 bg-red-900 bg-opacity-30'
@@ -1344,7 +1347,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
                 </span>
               </div>
             )}
-          </button>
+          </motion.button>
         </div>
 
         {/* Vertical Separator Line */}
@@ -1354,10 +1357,12 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
 
         {/* Timeframe Selector */}
         <div className="h-full flex items-center">
-          <button
+          <motion.button
             ref={timeframeButtonRef}
             onClick={() => setIsTimeframeOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-full text-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 rounded-md text-sm"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <span className="font-medium">{currentTimeframe}</span>
             <svg
@@ -1374,7 +1379,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
             >
               <polyline points="6,9 12,15 18,9"></polyline>
             </svg>
-          </button>
+          </motion.button>
         </div>
 
         {/* Vertical Separator Line */}
@@ -1384,10 +1389,12 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
 
         {/* Indicators Button */}
         <div className="h-full flex items-center">
-          <button
+          <motion.button
             ref={indicatorsButtonRef}
             onClick={() => setIsIndicatorsOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-full text-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 rounded-md text-sm"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1405,7 +1412,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
               <path d="M7 12l3-3 3 3 5-5"></path>
             </svg>
             <span className="font-medium">Indicators</span>
-          </button>
+          </motion.button>
         </div>
 
         {/* Empty space */}
@@ -1416,7 +1423,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
       <div className="w-[52px] flex items-center justify-center">
         <button
           onClick={() => window.location.href = '/'}
-          className="p-2 hover:bg-zinc-800 transition-colors duration-200 rounded"
+          className="p-2 hover:bg-zinc-800 transition-colors duration-200"
           title="Exit"
         >
           <svg

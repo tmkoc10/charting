@@ -31,7 +31,7 @@ const ClockIcon = ({ className }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    {/* Main clock body */}
+    {/* Main clock circle */}
     <circle
       cx="12"
       cy="12"
@@ -39,10 +39,11 @@ const ClockIcon = ({ className }: { className?: string }) => (
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
+      strokeLinejoin="round"
     />
     {/* Clock hands */}
     <path
-      d="M12 7V12L15 14"
+      d="M12 7V12L15 15"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
@@ -50,47 +51,19 @@ const ClockIcon = ({ className }: { className?: string }) => (
     />
     {/* Left alarm bell */}
     <circle
-      cx="6.5"
-      cy="8"
-      r="1.8"
+      cx="6"
+      cy="6"
+      r="1"
       stroke="currentColor"
       strokeWidth="1.5"
-      strokeLinecap="round"
     />
     {/* Right alarm bell */}
     <circle
-      cx="17.5"
-      cy="8"
-      r="1.8"
+      cx="18"
+      cy="6"
+      r="1"
       stroke="currentColor"
       strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    {/* Alert/ringing lines - Left side */}
-    <path
-      d="M4.2 6.5C4.2 6.5 4.8 5.8 5.5 6"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <path
-      d="M3.8 7.5C3.8 7.5 4.5 7 5 7.2"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    {/* Alert/ringing lines - Right side */}
-    <path
-      d="M19.8 6.5C19.8 6.5 19.2 5.8 18.5 6"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <path
-      d="M20.2 7.5C20.2 7.5 19.5 7 19 7.2"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
     />
   </svg>
 );

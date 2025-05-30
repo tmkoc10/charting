@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@/lib/query-client";
 import { PerformanceMonitoringProvider } from "@/lib/performance-provider";
 import { PrefetchProvider } from "@/lib/prefetch";
+import { ThemeProvider } from "@/lib/theme-context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -60,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         {/* Preconnect to external domains for faster loading */}
         <link rel="preconnect" href="https://images.unsplash.com" />
@@ -87,13 +88,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
-          <PerformanceMonitoringProvider>
-            <PrefetchProvider>
-              {children}
-            </PrefetchProvider>
-          </PerformanceMonitoringProvider>
-        </QueryProvider>
+        <ThemeProvider>
+          <QueryProvider>
+            <PerformanceMonitoringProvider>
+              <PrefetchProvider>
+                {children}
+              </PrefetchProvider>
+            </PerformanceMonitoringProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

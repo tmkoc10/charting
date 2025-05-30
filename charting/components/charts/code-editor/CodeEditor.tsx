@@ -410,7 +410,7 @@ plot(close)`;
         <div className="flex items-center px-4 gap-2">
           <button
             onClick={handleSave}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-full font-medium shadow-sm hover:shadow-md"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-md font-medium shadow-sm hover:shadow-md"
             title="Save script"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -422,7 +422,7 @@ plot(close)`;
           <button
             onClick={handleRun}
             disabled={isRunning}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all duration-200 rounded-full font-medium shadow-sm hover:shadow-md ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all duration-200 rounded-md font-medium shadow-sm hover:shadow-md ${
               isRunning
                 ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 active:scale-95'
@@ -448,7 +448,7 @@ plot(close)`;
 
           <button
             onClick={handlePublish}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-full font-medium shadow-sm hover:shadow-md"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-md font-medium shadow-sm hover:shadow-md"
             title="Publish strategy"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

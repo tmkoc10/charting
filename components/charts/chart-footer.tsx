@@ -13,7 +13,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
   return (
     <footer className="h-full bg-black border border-zinc-800 rounded flex items-center justify-start px-4 text-xs relative z-20">
-      {/* Tool tabs like TradingView - aligned to left with capsule styling */}
+      {/* Tool tabs like TradingView - aligned to left with square styling */}
       <div className="flex items-center gap-2 relative">
         {/* Brokers Tab */}
         <motion.button
@@ -24,7 +24,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               onTabClick("brokers");
             }
           }}
-          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-full text-sm ${
+          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "brokers"
               ? 'text-white shadow-lg'
               : 'bg-zinc-900 hover:bg-zinc-800 text-white'
@@ -36,7 +36,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "brokers" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-full shadow-lg"
+              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -65,7 +65,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "brokers" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
+            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
           )}
         </motion.button>
 
@@ -78,7 +78,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               onTabClick("code-editor");
             }
           }}
-          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-full text-sm ${
+          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "code-editor"
               ? 'text-white shadow-lg'
               : 'bg-zinc-900 hover:bg-zinc-800 text-white'
@@ -90,7 +90,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "code-editor" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-full shadow-lg"
+              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -118,7 +118,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "code-editor" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
+            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
           )}
         </motion.button>
 
@@ -131,7 +131,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               onTabClick("strategy-tester");
             }
           }}
-          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-full text-sm ${
+          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "strategy-tester"
               ? 'text-white shadow-lg'
               : 'bg-zinc-900 hover:bg-zinc-800 text-white'
@@ -143,7 +143,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "strategy-tester" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-full shadow-lg"
+              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -171,7 +171,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "strategy-tester" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
+            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
           )}
         </motion.button>
 
@@ -184,7 +184,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               onTabClick("hft-panel");
             }
           }}
-          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-full text-sm ${
+          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "hft-panel"
               ? 'text-white shadow-lg'
               : 'bg-zinc-900 hover:bg-zinc-800 text-white'
@@ -196,7 +196,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "hft-panel" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-full shadow-lg"
+              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -223,7 +223,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "hft-panel" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
+            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
           )}
         </motion.button>
 
@@ -236,7 +236,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               onTabClick("stocks-screener");
             }
           }}
-          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-full text-sm ${
+          className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "stocks-screener"
               ? 'text-white shadow-lg'
               : 'bg-zinc-900 hover:bg-zinc-800 text-white'
@@ -248,7 +248,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "stocks-screener" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-full shadow-lg"
+              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -276,7 +276,7 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "stocks-screener" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-full blur-md -z-10"></div>
+            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
           )}
         </motion.button>
       </div>

@@ -294,7 +294,7 @@ export function ChartDrawer({ activeTab, onResize, currentHeight, codeEditorCont
               onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
               className={cn(
-                "w-12 h-6 bg-zinc-700 rounded-full cursor-ns-resize flex items-center justify-center",
+                "w-12 h-[18px] bg-zinc-700 rounded-full cursor-ns-resize flex items-center justify-center",
                 "hover:bg-zinc-600 transition-colors duration-200",
                 "border border-zinc-600 shadow-lg",
                 "touch-none select-none",
