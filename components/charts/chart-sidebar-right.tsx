@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+
+import { useTheme } from "@/lib/theme-context";
 
 // Navigation Icon Components
 const BookmarkIcon = ({ className }: { className?: string }) => (
@@ -125,61 +126,85 @@ interface NavigationIconProps {
   label: string;
   onClick: () => void;
   isActive?: boolean;
+  theme: 'light' | 'dark';
 }
 
-const NavigationIcon = ({ icon, label, onClick, isActive = false }: NavigationIconProps) => (
+interface ChartSidebarRightProps {
+  onTabClick?: (tabId: string) => void;
+  activeTab?: string;
+  isDrawerOpen?: boolean;
+}
+
+const NavigationIcon = ({ icon, label, onClick, isActive = false, theme }: NavigationIconProps) => (
   <button
     onClick={onClick}
     className={`p-2 rounded transition-colors duration-200 group ${
-      isActive ? 'bg-zinc-800' : 'hover:bg-zinc-800'
+      isActive
+        ? (theme === 'dark' ? 'bg-zinc-800' : 'bg-zinc-200')
+        : (theme === 'dark' ? 'hover:bg-zinc-800' : 'hover:bg-zinc-200')
     }`}
     aria-label={label}
     title={label}
   >
-    <div className={`${isActive ? 'text-zinc-300' : 'text-zinc-400 group-hover:text-zinc-300'}`}>
+    <div className={`${
+      isActive
+        ? (theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700')
+        : (theme === 'dark' ? 'text-zinc-400 group-hover:text-zinc-300' : 'text-zinc-600 group-hover:text-zinc-700')
+    }`}>
       {icon}
     </div>
   </button>
 );
 
-export function ChartSidebarRight() {
-  const [activeIcon, setActiveIcon] = useState<string | null>(null);
+export function ChartSidebarRight({ onTabClick, activeTab, isDrawerOpen }: ChartSidebarRightProps) {
+  const { theme } = useTheme();
 
   const handleIconClick = (iconName: string) => {
-    setActiveIcon(activeIcon === iconName ? null : iconName);
-    console.log(`${iconName} clicked`);
+    if (onTabClick) {
+      onTabClick(iconName);
+    } else {
+      console.log(`${iconName} clicked`);
+    }
   };
 
   return (
-    <div className="w-full h-full bg-black border border-zinc-800 rounded flex flex-col">
+    <div className={`w-full h-full rounded flex flex-col ${
+      theme === 'dark'
+        ? 'bg-black border border-zinc-800'
+        : 'bg-white border border-zinc-300'
+    }`}>
       {/* Navigation Icons */}
       <div className="flex flex-col items-center pt-3 space-y-4">
         <NavigationIcon
           icon={<BookmarkIcon />}
           label="Bookmarks / Saved Items"
           onClick={() => handleIconClick('bookmark')}
-          isActive={activeIcon === 'bookmark'}
+          isActive={isDrawerOpen && activeTab === 'bookmark'}
+          theme={theme}
         />
 
         <NavigationIcon
           icon={<ClockIcon />}
           label="Alerts / Notifications"
           onClick={() => handleIconClick('clock')}
-          isActive={activeIcon === 'clock'}
+          isActive={isDrawerOpen && activeTab === 'clock'}
+          theme={theme}
         />
 
         <NavigationIcon
           icon={<LayersIcon />}
           label="Layers / Stack"
           onClick={() => handleIconClick('layers')}
-          isActive={activeIcon === 'layers'}
+          isActive={isDrawerOpen && activeTab === 'layers'}
+          theme={theme}
         />
 
         <NavigationIcon
           icon={<ChatIcon />}
           label="Chat / Messages"
           onClick={() => handleIconClick('chat')}
-          isActive={activeIcon === 'chat'}
+          isActive={isDrawerOpen && activeTab === 'chat'}
+          theme={theme}
         />
       </div>
     </div>

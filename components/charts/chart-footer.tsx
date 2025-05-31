@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTheme } from "@/lib/theme-context";
 
 interface ChartFooterProps {
   onTabClick: (tabId: string) => void;
@@ -10,9 +11,14 @@ interface ChartFooterProps {
 }
 
 export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: ChartFooterProps) {
+  const { theme } = useTheme();
 
   return (
-    <footer className="h-full bg-black border border-zinc-800 rounded flex items-center justify-start px-4 text-xs relative z-20">
+    <footer className={`h-full rounded flex items-center justify-start px-4 text-xs relative z-20 ${
+      theme === 'dark'
+        ? 'bg-black border border-zinc-800'
+        : 'bg-white border border-zinc-300'
+    }`}>
       {/* Tool tabs like TradingView - aligned to left with square styling */}
       <div className="flex items-center gap-2 relative">
         {/* Brokers Tab */}
@@ -26,8 +32,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           }}
           className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "brokers"
-              ? 'text-white shadow-lg'
-              : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+              ? (theme === 'dark' ? 'text-white shadow-lg' : 'text-black shadow-lg')
+              : (theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+                )
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -36,7 +45,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "brokers" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
+              className={`absolute inset-0 rounded-md shadow-lg ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
+                  : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
+              }`}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -53,7 +66,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               strokeLinecap="round"
               strokeLinejoin="round"
               className={`transition-all duration-300 ${
-                isDrawerOpen && activeTab === "brokers" ? 'text-white scale-110' : 'text-zinc-400'
+                isDrawerOpen && activeTab === "brokers"
+                  ? (theme === 'dark' ? 'text-white scale-110' : 'text-black scale-110')
+                  : (theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600')
               }`}
             >
               <path d="M3 21h18"></path>
@@ -65,7 +80,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "brokers" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
+            <div className={`absolute inset-0 rounded-md blur-md -z-10 ${
+              theme === 'dark' ? 'bg-zinc-700/30' : 'bg-zinc-400/30'
+            }`}></div>
           )}
         </motion.button>
 
@@ -80,8 +97,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           }}
           className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "code-editor"
-              ? 'text-white shadow-lg'
-              : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+              ? (theme === 'dark' ? 'text-white shadow-lg' : 'text-black shadow-lg')
+              : (theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+                )
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -90,7 +110,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "code-editor" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
+              className={`absolute inset-0 rounded-md shadow-lg ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
+                  : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
+              }`}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -107,7 +131,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               strokeLinecap="round"
               strokeLinejoin="round"
               className={`transition-all duration-300 ${
-                isDrawerOpen && activeTab === "code-editor" ? 'text-white scale-110' : 'text-zinc-400'
+                isDrawerOpen && activeTab === "code-editor"
+                  ? (theme === 'dark' ? 'text-white scale-110' : 'text-black scale-110')
+                  : (theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600')
               }`}
             >
               <polyline points="16 18 22 12 16 6"></polyline>
@@ -118,7 +144,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "code-editor" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
+            <div className={`absolute inset-0 rounded-md blur-md -z-10 ${
+              theme === 'dark' ? 'bg-zinc-700/30' : 'bg-zinc-400/30'
+            }`}></div>
           )}
         </motion.button>
 
@@ -133,8 +161,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           }}
           className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "strategy-tester"
-              ? 'text-white shadow-lg'
-              : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+              ? (theme === 'dark' ? 'text-white shadow-lg' : 'text-black shadow-lg')
+              : (theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+                )
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -143,7 +174,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "strategy-tester" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
+              className={`absolute inset-0 rounded-md shadow-lg ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
+                  : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
+              }`}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -160,7 +195,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               strokeLinecap="round"
               strokeLinejoin="round"
               className={`transition-all duration-300 ${
-                isDrawerOpen && activeTab === "strategy-tester" ? 'text-white scale-110' : 'text-zinc-400'
+                isDrawerOpen && activeTab === "strategy-tester"
+                  ? (theme === 'dark' ? 'text-white scale-110' : 'text-black scale-110')
+                  : (theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600')
               }`}
             >
               <path d="M3 3v18h18"></path>
@@ -171,7 +208,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "strategy-tester" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
+            <div className={`absolute inset-0 rounded-md blur-md -z-10 ${
+              theme === 'dark' ? 'bg-zinc-700/30' : 'bg-zinc-400/30'
+            }`}></div>
           )}
         </motion.button>
 
@@ -186,8 +225,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           }}
           className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "hft-panel"
-              ? 'text-white shadow-lg'
-              : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+              ? (theme === 'dark' ? 'text-white shadow-lg' : 'text-black shadow-lg')
+              : (theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+                )
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -196,7 +238,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "hft-panel" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
+              className={`absolute inset-0 rounded-md shadow-lg ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
+                  : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
+              }`}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -213,7 +259,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               strokeLinecap="round"
               strokeLinejoin="round"
               className={`transition-all duration-300 ${
-                isDrawerOpen && activeTab === "hft-panel" ? 'text-white scale-110' : 'text-zinc-400'
+                isDrawerOpen && activeTab === "hft-panel"
+                  ? (theme === 'dark' ? 'text-white scale-110' : 'text-black scale-110')
+                  : (theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600')
               }`}
             >
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
@@ -223,7 +271,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "hft-panel" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
+            <div className={`absolute inset-0 rounded-md blur-md -z-10 ${
+              theme === 'dark' ? 'bg-zinc-700/30' : 'bg-zinc-400/30'
+            }`}></div>
           )}
         </motion.button>
 
@@ -238,8 +288,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           }}
           className={`relative flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
             isDrawerOpen && activeTab === "stocks-screener"
-              ? 'text-white shadow-lg'
-              : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+              ? (theme === 'dark' ? 'text-white shadow-lg' : 'text-black shadow-lg')
+              : (theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+                )
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -248,7 +301,11 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
           {isDrawerOpen && activeTab === "stocks-screener" && (
             <motion.div
               layoutId="activeFooterTab"
-              className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-md shadow-lg"
+              className={`absolute inset-0 rounded-md shadow-lg ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
+                  : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
+              }`}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
@@ -265,7 +322,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
               strokeLinecap="round"
               strokeLinejoin="round"
               className={`transition-all duration-300 ${
-                isDrawerOpen && activeTab === "stocks-screener" ? 'text-white scale-110' : 'text-zinc-400'
+                isDrawerOpen && activeTab === "stocks-screener"
+                  ? (theme === 'dark' ? 'text-white scale-110' : 'text-black scale-110')
+                  : (theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600')
               }`}
             >
               <circle cx="11" cy="11" r="8"></circle>
@@ -276,7 +335,9 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
 
           {/* Active Tab Glow Effect */}
           {isDrawerOpen && activeTab === "stocks-screener" && (
-            <div className="absolute inset-0 bg-zinc-700/30 rounded-md blur-md -z-10"></div>
+            <div className={`absolute inset-0 rounded-md blur-md -z-10 ${
+              theme === 'dark' ? 'bg-zinc-700/30' : 'bg-zinc-400/30'
+            }`}></div>
           )}
         </motion.button>
       </div>

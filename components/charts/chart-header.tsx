@@ -3,9 +3,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
-import { getLatestPrice, getPriceChange, formatPrice } from "@/lib/chart-data";
+
 import { ProfileDropdown } from "./profile-dropdown";
 import { createClient } from "@/lib/client";
+import { useTheme } from "@/lib/theme-context";
 
 // Define symbol search types
 type SymbolData = {
@@ -14,6 +15,7 @@ type SymbolData = {
   type: string;
   exchange: string;
   category: string;
+  securityId: string; // Keep track of the original security ID for internal use
 };
 
 // Database result types
@@ -34,6 +36,73 @@ type OptionSymbol = {
   EXCHANGE_SEGMENT: string;
   DISPLAY_NAME: string;
 };
+
+// Function to convert display names to clean symbol names
+function generateCleanSymbol(displayName: string, category: string): string {
+  // Handle indices specially
+  if (category === "Indices") {
+    if (displayName.toLowerCase().includes("nifty 50")) return "NIFTY50";
+    if (displayName.toLowerCase().includes("nifty bank")) return "BANKNIFTY";
+    if (displayName.toLowerCase().includes("finnifty")) return "FINNIFTY";
+    if (displayName.toLowerCase().includes("india vix")) return "INDIAVIX";
+    if (displayName.toLowerCase().includes("nifty")) return "NIFTY";
+  }
+
+  // For equities, create full symbol names from company names
+  // Remove corporate suffixes but keep the full company name
+  const cleanName = displayName
+    .replace(/\s+(Limited|Ltd|Corporation|Corp|Inc|Company|Co|Pvt)\b/gi, '') // Remove corporate suffixes
+    .replace(/\s+(Mills|Industries|Motors|Power|Energy|Finance|Bank|Steel|Textiles|Chemicals|Pharmaceuticals|Technologies|Systems|Solutions|Services|Enterprises|Group)\b/gi, '') // Remove common business terms
+    .replace(/\s+/g, '') // Remove spaces
+    .replace(/[^a-zA-Z0-9]/g, '') // Remove special characters
+    .toUpperCase();
+
+  // Handle specific company patterns to create meaningful full names
+  const lowerDisplayName = displayName.toLowerCase();
+
+  // Reliance group companies
+  if (lowerDisplayName.includes("reliance") && lowerDisplayName.includes("communication")) return "RELIANCECOMMUNICATIONS";
+  if (lowerDisplayName.includes("reliance") && lowerDisplayName.includes("power")) return "RELIANCEPOWER";
+  if (lowerDisplayName.includes("reliance") && lowerDisplayName.includes("capital")) return "RELIANCECAPITAL";
+  if (lowerDisplayName.includes("reliance") && lowerDisplayName.includes("infrastructure")) return "RELIANCEINFRA";
+  if (lowerDisplayName.includes("reliance") && lowerDisplayName.includes("industries")) return "RELIANCEINDUSTRIES";
+  if (lowerDisplayName.includes("reliance")) return "RELIANCE";
+
+  // TATA group companies
+  if (lowerDisplayName.includes("tata") && lowerDisplayName.includes("steel")) return "TATASTEEL";
+  if (lowerDisplayName.includes("tata") && lowerDisplayName.includes("motors")) return "TATAMOTORS";
+  if (lowerDisplayName.includes("tata") && lowerDisplayName.includes("power")) return "TATAPOWER";
+  if (lowerDisplayName.includes("tata") && lowerDisplayName.includes("consultancy")) return "TCS";
+  if (lowerDisplayName.includes("tata") && lowerDisplayName.includes("consumer")) return "TATACONSUMER";
+  if (lowerDisplayName.includes("tata")) return "TATA";
+
+  // Other major companies with full names
+  if (lowerDisplayName.includes("infosys")) return "INFOSYS";
+  if (lowerDisplayName.includes("wipro")) return "WIPRO";
+  if (lowerDisplayName.includes("hdfc") && lowerDisplayName.includes("bank")) return "HDFCBANK";
+  if (lowerDisplayName.includes("hdfc") && lowerDisplayName.includes("life")) return "HDFCLIFE";
+  if (lowerDisplayName.includes("hdfc")) return "HDFC";
+  if (lowerDisplayName.includes("icici") && lowerDisplayName.includes("bank")) return "ICICIBANK";
+  if (lowerDisplayName.includes("icici") && lowerDisplayName.includes("prudential")) return "ICICIPRU";
+  if (lowerDisplayName.includes("icici")) return "ICICI";
+  if (lowerDisplayName.includes("bharti") && lowerDisplayName.includes("airtel")) return "BHARTIAIRTEL";
+  if (lowerDisplayName.includes("bharti")) return "BHARTI";
+  if (lowerDisplayName.includes("maruti") && lowerDisplayName.includes("suzuki")) return "MARUTISUZUKI";
+  if (lowerDisplayName.includes("maruti")) return "MARUTI";
+  if (lowerDisplayName.includes("state bank")) return "SBI";
+  if (lowerDisplayName.includes("larsen") && lowerDisplayName.includes("toubro")) return "LT";
+  if (lowerDisplayName.includes("asian paints")) return "ASIANPAINTS";
+  if (lowerDisplayName.includes("hindustan unilever")) return "HUL";
+  if (lowerDisplayName.includes("itc")) return "ITC";
+  if (lowerDisplayName.includes("kotak mahindra")) return "KOTAKBANK";
+  if (lowerDisplayName.includes("mahindra") && lowerDisplayName.includes("mahindra")) return "MM";
+  if (lowerDisplayName.includes("bajaj") && lowerDisplayName.includes("auto")) return "BAJAJAUTO";
+  if (lowerDisplayName.includes("bajaj") && lowerDisplayName.includes("finance")) return "BAJAJFINANCE";
+  if (lowerDisplayName.includes("bajaj")) return "BAJAJ";
+
+  // If no specific pattern matches, use the cleaned full name (no length limit)
+  return cleanName || displayName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+}
 
 // Categories for filtering - updated to match actual data
 const CATEGORIES = [
@@ -182,27 +251,30 @@ function useSymbolSearch() {
 
       // Helper function to map database results to SymbolData
       const mapEquityToSymbol = (equity: EquitySymbol): SymbolData => ({
-        symbol: equity.SECURITY_ID,
+        symbol: generateCleanSymbol(equity.DISPLAY_NAME, "Equity"),
         name: equity.DISPLAY_NAME,
         type: "Equity",
         exchange: equity.EXCHANGE_SEGMENT,
-        category: "Equity"
+        category: "Equity",
+        securityId: equity.SECURITY_ID
       });
 
       const mapIndexToSymbol = (index: IndexSymbol): SymbolData => ({
-        symbol: index.SECURITY_ID,
+        symbol: generateCleanSymbol(index.DISPLAY_NAME, "Indices"),
         name: index.DISPLAY_NAME,
         type: "Index",
         exchange: index.EXCHANGE_SEGMENT,
-        category: "Indices"
+        category: "Indices",
+        securityId: index.SECURITY_ID
       });
 
       const mapOptionToSymbol = (option: OptionSymbol): SymbolData => ({
-        symbol: option.SECURITY_ID.toString(),
+        symbol: generateCleanSymbol(option.DISPLAY_NAME, "Options"),
         name: option.DISPLAY_NAME,
         type: "Option",
         exchange: option.EXCHANGE_SEGMENT,
-        category: "Options"
+        category: "Options",
+        securityId: option.SECURITY_ID.toString()
       });
 
       // Fetch from equity table
@@ -341,11 +413,12 @@ function useSymbolSearch() {
 
 // Default symbol for initial state
 const DEFAULT_SYMBOL: SymbolData = {
-  symbol: "NIFTY",
-  name: "NIFTY 50 INDEX",
+  symbol: "NIFTY50",
+  name: "Nifty 50",
   type: "Index",
   exchange: "NSE",
-  category: "Indices"
+  category: "Indices",
+  securityId: "13"
 };
 
 // Indicators Selector Component
@@ -358,6 +431,7 @@ function IndicatorsSelector({
   onClose: () => void;
   onSelect: (indicator: IndicatorType) => void;
 }) {
+  const { theme } = useTheme();
   const popupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState("Basic");
@@ -434,27 +508,47 @@ function IndicatorsSelector({
 
   // Portal to render at the body level to avoid z-index issues
   return createPortal(
-    <div className={`fixed inset-0 bg-black z-50 flex items-start justify-center pt-20 transition-all duration-500 ease-out ${
-      isAnimating ? 'bg-opacity-80 backdrop-blur-sm' : 'bg-opacity-0'
+    <div className={`fixed inset-0 z-50 flex items-start justify-center pt-20 transition-all duration-500 ease-out ${
+      isAnimating
+        ? (theme === 'dark'
+            ? 'bg-black bg-opacity-80 backdrop-blur-sm'
+            : 'bg-black bg-opacity-50 backdrop-blur-sm')
+        : 'bg-opacity-0'
     }`}>
       <div
         ref={popupRef}
-        className={`bg-black border-2 border-gray-700 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
+        className={`border-2 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
+          theme === 'dark'
+            ? 'bg-black border-gray-700'
+            : 'bg-white border-gray-300'
+        } ${
           isAnimating
             ? 'translate-y-0 opacity-100 scale-100'
             : 'translate-y-8 opacity-0 scale-95'
         }`}
         style={{
           height: '580px', // Increased from 460px to 580px (120px more from bottom)
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+          boxShadow: theme === 'dark'
+            ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+            : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
         }}
       >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 border-opacity-50">
-        <h2 className="text-lg font-semibold text-white">Indicators</h2>
+      <div className={`flex items-center justify-between px-4 py-3 border-b border-opacity-50 ${
+        theme === 'dark'
+          ? 'border-gray-700'
+          : 'border-gray-300'
+      }`}>
+        <h2 className={`text-lg font-semibold ${
+          theme === 'dark' ? 'text-white' : 'text-black'
+        }`}>Indicators</h2>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-gray-800 hover:scale-110 active:scale-95"
+          className={`transition-all duration-300 p-2 rounded-lg hover:scale-110 active:scale-95 ${
+            theme === 'dark'
+              ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+              : 'text-gray-600 hover:text-black hover:bg-gray-200'
+          }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -476,9 +570,19 @@ function IndicatorsSelector({
       {/* Main Content Area with Sidebar */}
       <div className="flex flex-1" style={{ height: '500px' }}> {/* Increased from 380px to 500px */}
         {/* Left Sidebar - Categories */}
-        <div className="w-48 border-r border-gray-700 border-opacity-50 bg-gray-900 bg-opacity-30">
-          <div className="p-3 border-b border-gray-700 border-opacity-30">
-            <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">Categories</h3>
+        <div className={`w-48 border-r border-opacity-50 ${
+          theme === 'dark'
+            ? 'border-gray-700 bg-gray-900 bg-opacity-30'
+            : 'border-gray-300 bg-gray-100 bg-opacity-50'
+        }`}>
+          <div className={`p-3 border-b border-opacity-30 ${
+            theme === 'dark'
+              ? 'border-gray-700'
+              : 'border-gray-300'
+          }`}>
+            <h3 className={`text-sm font-medium uppercase tracking-wide ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>Categories</h3>
           </div>
           <div className="py-2">
             {Object.keys(INDICATORS).map((category, index) => (
@@ -487,19 +591,27 @@ function IndicatorsSelector({
                 onClick={() => setSelectedCategory(category)}
                 className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-300 transform hover:translate-x-1 group ${
                   selectedCategory === category
-                    ? "bg-gray-700 text-white shadow-lg border-r-2 border-r-gray-500"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800 hover:bg-opacity-50"
+                    ? (theme === 'dark'
+                        ? "bg-gray-700 text-white shadow-lg border-r-2 border-r-gray-500"
+                        : "bg-gray-300 text-black shadow-lg border-r-2 border-r-gray-600")
+                    : (theme === 'dark'
+                        ? "text-gray-400 hover:text-white hover:bg-gray-800 hover:bg-opacity-50"
+                        : "text-gray-600 hover:text-black hover:bg-gray-200 hover:bg-opacity-70")
                 }`}
                 style={{
                   animationDelay: `${index * 100}ms`
                 }}
               >
                 <div className="flex items-center justify-between">
-                  <span className="transition-all duration-300 group-hover:text-gray-100">{category}</span>
+                  <span className={`transition-all duration-300 ${
+                    theme === 'dark' ? 'group-hover:text-gray-100' : 'group-hover:text-gray-800'
+                  }`}>{category}</span>
                   <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
                     selectedCategory === category
-                      ? "bg-gray-400"
-                      : "bg-gray-600 group-hover:bg-gray-500"
+                      ? (theme === 'dark' ? "bg-gray-400" : "bg-gray-600")
+                      : (theme === 'dark'
+                          ? "bg-gray-600 group-hover:bg-gray-500"
+                          : "bg-gray-400 group-hover:bg-gray-500")
                   }`}></div>
                 </div>
               </button>
@@ -510,9 +622,17 @@ function IndicatorsSelector({
         {/* Right Content Area - Indicators List */}
         <div className="flex-1 flex flex-col">
           {/* Search Input */}
-          <div className="px-4 py-3 border-b border-gray-700 border-opacity-30">
+          <div className={`px-4 py-3 border-b border-opacity-30 ${
+            theme === 'dark'
+              ? 'border-gray-700'
+              : 'border-gray-300'
+          }`}>
             <div className="relative group">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 group-focus-within:text-gray-300">
+              <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+                theme === 'dark'
+                  ? 'text-gray-500 group-focus-within:text-gray-300'
+                  : 'text-gray-400 group-focus-within:text-gray-600'
+              }`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="14"
@@ -523,7 +643,6 @@ function IndicatorsSelector({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-gray-500"
                 >
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -535,12 +654,20 @@ function IndicatorsSelector({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search indicators..."
-                className="w-full bg-gray-900 bg-opacity-30 text-white pl-9 pr-9 py-2.5 rounded-lg border border-gray-600 border-opacity-40 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 focus:border-gray-500 focus:bg-gray-800 focus:bg-opacity-50 transition-all duration-300 text-sm placeholder-gray-500 hover:border-gray-500"
+                className={`w-full pl-9 pr-9 py-2.5 rounded-lg border border-opacity-40 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 text-sm ${
+                  theme === 'dark'
+                    ? 'bg-gray-900 bg-opacity-30 text-white border-gray-600 focus:ring-gray-500 focus:border-gray-500 focus:bg-gray-800 focus:bg-opacity-50 placeholder-gray-500 hover:border-gray-500'
+                    : 'bg-gray-100 bg-opacity-50 text-black border-gray-300 focus:ring-gray-400 focus:border-gray-400 focus:bg-gray-50 placeholder-gray-400 hover:border-gray-400'
+                }`}
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white transition-all duration-300 p-1 rounded-lg hover:bg-gray-700 hover:scale-110 active:scale-95"
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 p-1 rounded-lg hover:scale-110 active:scale-95 ${
+                    theme === 'dark'
+                      ? 'text-gray-500 hover:text-white hover:bg-gray-700'
+                      : 'text-gray-400 hover:text-black hover:bg-gray-200'
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -572,7 +699,11 @@ function IndicatorsSelector({
                       onSelect(indicator);
                       onClose();
                     }}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-800 hover:bg-opacity-50 cursor-pointer border-b border-gray-700 border-opacity-20 last:border-b-0 transition-all duration-300 transform hover:translate-x-1 hover:shadow-lg group"
+                    className={`w-full px-4 py-3 text-left cursor-pointer border-b border-opacity-20 last:border-b-0 transition-all duration-300 transform hover:translate-x-1 hover:shadow-lg group ${
+                      theme === 'dark'
+                        ? 'hover:bg-gray-800 hover:bg-opacity-50 border-gray-700'
+                        : 'hover:bg-gray-100 hover:bg-opacity-70 border-gray-300'
+                    }`}
                     style={{
                       animationDelay: `${index * 30}ms`
                     }}
@@ -580,7 +711,11 @@ function IndicatorsSelector({
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-white text-sm transition-all duration-300 group-hover:text-gray-100 truncate">
+                          <span className={`font-medium text-sm transition-all duration-300 truncate ${
+                            theme === 'dark'
+                              ? 'text-white group-hover:text-gray-100'
+                              : 'text-black group-hover:text-gray-800'
+                          }`}>
                             {searchTerm ? (
                               <HighlightText text={indicator.name} highlight={searchTerm} />
                             ) : (
@@ -591,7 +726,11 @@ function IndicatorsSelector({
                             {getCategoryDisplayName(indicator.category)}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-400 transition-all duration-300 group-hover:text-gray-300 line-clamp-2">
+                        <p className={`text-xs transition-all duration-300 line-clamp-2 ${
+                          theme === 'dark'
+                            ? 'text-gray-400 group-hover:text-gray-300'
+                            : 'text-gray-600 group-hover:text-gray-700'
+                        }`}>
                           {searchTerm ? (
                             <HighlightText text={indicator.description} highlight={searchTerm} />
                           ) : (
@@ -600,22 +739,32 @@ function IndicatorsSelector({
                         </p>
                         {indicator.parameters && Object.keys(indicator.parameters).length > 0 && (
                           <div className="flex items-center gap-1 mt-1">
-                            <span className="text-xs text-gray-500">Default:</span>
-                            <span className="text-xs text-gray-400 font-mono">
+                            <span className={`text-xs ${
+                              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                            }`}>Default:</span>
+                            <span className={`text-xs font-mono ${
+                              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                            }`}>
                               {Object.entries(indicator.parameters).map(([key, value]) => `${key}=${value}`).join(', ')}
                             </span>
                           </div>
                         )}
                       </div>
                       <div className="flex items-center space-x-2 ml-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-600 transition-all duration-300 group-hover:bg-gray-500"></div>
+                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          theme === 'dark'
+                            ? 'bg-gray-600 group-hover:bg-gray-500'
+                            : 'bg-gray-400 group-hover:bg-gray-500'
+                        }`}></div>
                       </div>
                     </div>
                   </button>
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center text-gray-500 animate-pulse">
+              <div className={`p-8 text-center animate-pulse ${
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
+              }`}>
                 <div className="text-lg mb-2 font-medium">No indicators found</div>
                 <div className="text-sm">Try adjusting your search or category filter</div>
               </div>
@@ -643,6 +792,7 @@ function TimeframeSelector({
   currentTimeframe: string;
   buttonRef: React.RefObject<HTMLButtonElement | null>;
 }) {
+  const { theme } = useTheme();
   const popupRef = useRef<HTMLDivElement>(null);
   const [expandedSections, setExpandedSections] = useState<string[]>(["MINUTES"]);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -710,7 +860,11 @@ function TimeframeSelector({
   return createPortal(
     <div
       ref={popupRef}
-      className={`fixed bg-black border-2 border-gray-700 rounded-xl shadow-2xl w-64 overflow-hidden transform transition-all duration-500 ease-out z-50 ${
+      className={`fixed border-2 rounded-xl shadow-2xl w-64 overflow-hidden transform transition-all duration-500 ease-out z-50 ${
+        theme === 'dark'
+          ? 'bg-black border-gray-700'
+          : 'bg-white border-gray-300'
+      } ${
         isAnimating
           ? 'translate-y-0 opacity-100 scale-100'
           : 'translate-y-2 opacity-0 scale-95'
@@ -719,15 +873,27 @@ function TimeframeSelector({
         top: position.top,
         left: position.left,
         height: '400px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+        boxShadow: theme === 'dark'
+          ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+          : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
       }}
     >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 border-opacity-50">
-          <h2 className="text-lg font-semibold text-white">Timeframe</h2>
+        <div className={`flex items-center justify-between px-4 py-3 border-b border-opacity-50 ${
+          theme === 'dark'
+            ? 'border-gray-700'
+            : 'border-gray-300'
+        }`}>
+          <h2 className={`text-lg font-semibold ${
+            theme === 'dark' ? 'text-white' : 'text-black'
+          }`}>Timeframe</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-gray-800 hover:scale-110 active:scale-95"
+            className={`transition-all duration-300 p-2 rounded-lg hover:scale-110 active:scale-95 ${
+              theme === 'dark'
+                ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                : 'text-gray-600 hover:text-black hover:bg-gray-200'
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -753,12 +919,18 @@ function TimeframeSelector({
               {/* Section Header */}
               <button
                 onClick={() => toggleSection(sectionKey)}
-                className="w-full px-4 py-3 text-left text-gray-400 text-xs font-medium uppercase tracking-wide hover:bg-gray-800 hover:bg-opacity-50 transition-all duration-300 flex items-center justify-between border-b border-gray-700 border-opacity-30 group"
+                className={`w-full px-4 py-3 text-left text-xs font-medium uppercase tracking-wide transition-all duration-300 flex items-center justify-between border-b border-opacity-30 group ${
+                  theme === 'dark'
+                    ? 'text-gray-400 hover:bg-gray-800 hover:bg-opacity-50 border-gray-700'
+                    : 'text-gray-600 hover:bg-gray-100 hover:bg-opacity-70 border-gray-300'
+                }`}
                 style={{
                   animationDelay: `${sectionIndex * 100}ms`
                 }}
               >
-                <span className="transition-all duration-300 group-hover:text-gray-300">{sectionKey}</span>
+                <span className={`transition-all duration-300 ${
+                  theme === 'dark' ? 'group-hover:text-gray-300' : 'group-hover:text-gray-700'
+                }`}>{sectionKey}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="12"
@@ -787,16 +959,26 @@ function TimeframeSelector({
                         onSelect(timeframe.value);
                         onClose();
                       }}
-                      className={`w-full px-4 py-3 text-left text-sm transition-all duration-300 border-b border-gray-700 border-opacity-20 last:border-b-0 transform hover:translate-x-1 hover:shadow-lg group ${
+                      className={`w-full px-4 py-3 text-left text-sm transition-all duration-300 border-b border-opacity-20 last:border-b-0 transform hover:translate-x-1 hover:shadow-lg group ${
+                        theme === 'dark'
+                          ? 'border-gray-700'
+                          : 'border-gray-300'
+                      } ${
                         currentTimeframe === timeframe.value
-                          ? "bg-gray-700 text-white font-medium shadow-lg border-l-2 border-l-gray-500"
-                          : "text-gray-300 hover:bg-gray-800 hover:bg-opacity-70 hover:text-white"
+                          ? (theme === 'dark'
+                              ? "bg-gray-700 text-white font-medium shadow-lg border-l-2 border-l-gray-500"
+                              : "bg-gray-200 text-black font-medium shadow-lg border-l-2 border-l-gray-600")
+                          : (theme === 'dark'
+                              ? "text-gray-300 hover:bg-gray-800 hover:bg-opacity-70 hover:text-white"
+                              : "text-gray-700 hover:bg-gray-100 hover:bg-opacity-70 hover:text-black")
                       }`}
                       style={{
                         animationDelay: `${(sectionIndex * timeframes.length + index) * 50}ms`
                       }}
                     >
-                      <span className="transition-all duration-300 group-hover:text-gray-100">
+                      <span className={`transition-all duration-300 ${
+                        theme === 'dark' ? 'group-hover:text-gray-100' : 'group-hover:text-gray-800'
+                      }`}>
                         {timeframe.label}
                       </span>
                     </button>
@@ -821,6 +1003,7 @@ function SymbolSearchPopup({
   onClose: () => void;
   onSelect: (symbol: SymbolData) => void;
 }) {
+  const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isAnimating, setIsAnimating] = useState(false);
@@ -890,27 +1073,47 @@ function SymbolSearchPopup({
 
   // Portal to render at the body level to avoid z-index issues
   return createPortal(
-    <div className={`fixed inset-0 bg-black z-50 flex items-start justify-center pt-20 transition-all duration-500 ease-out ${
-      isAnimating ? 'bg-opacity-80 backdrop-blur-sm' : 'bg-opacity-0'
+    <div className={`fixed inset-0 z-50 flex items-start justify-center pt-20 transition-all duration-500 ease-out ${
+      isAnimating
+        ? (theme === 'dark'
+            ? 'bg-black bg-opacity-80 backdrop-blur-sm'
+            : 'bg-black bg-opacity-50 backdrop-blur-sm')
+        : 'bg-opacity-0'
     }`}>
       <div
         ref={popupRef}
-        className={`bg-black border-2 border-gray-700 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
+        className={`border-2 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
+          theme === 'dark'
+            ? 'bg-black border-gray-700'
+            : 'bg-white border-gray-300'
+        } ${
           isAnimating
             ? 'translate-y-0 opacity-100 scale-100'
             : 'translate-y-8 opacity-0 scale-95'
         }`}
         style={{
           height: '480px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+          boxShadow: theme === 'dark'
+            ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+            : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 border-opacity-50">
-          <h2 className="text-lg font-semibold text-white">Symbol Search</h2>
+        <div className={`flex items-center justify-between px-4 py-3 border-b border-opacity-50 ${
+          theme === 'dark'
+            ? 'border-gray-700'
+            : 'border-gray-300'
+        }`}>
+          <h2 className={`text-lg font-semibold ${
+            theme === 'dark' ? 'text-white' : 'text-black'
+          }`}>Symbol Search</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-gray-800 hover:scale-110 active:scale-95"
+            className={`transition-all duration-300 p-2 rounded-lg hover:scale-110 active:scale-95 ${
+              theme === 'dark'
+                ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                : 'text-gray-600 hover:text-black hover:bg-gray-200'
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -930,9 +1133,17 @@ function SymbolSearchPopup({
         </div>
 
         {/* Search Input */}
-        <div className="px-4 py-3 border-b border-gray-700 border-opacity-50">
+        <div className={`px-4 py-3 border-b border-opacity-50 ${
+          theme === 'dark'
+            ? 'border-gray-700'
+            : 'border-gray-300'
+        }`}>
           <div className="relative group">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 group-focus-within:text-gray-300">
+            <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+              theme === 'dark'
+                ? 'text-gray-500 group-focus-within:text-gray-300'
+                : 'text-gray-400 group-focus-within:text-gray-600'
+            }`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -943,7 +1154,6 @@ function SymbolSearchPopup({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-gray-500"
               >
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -955,12 +1165,20 @@ function SymbolSearchPopup({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search symbols..."
-              className="w-full bg-gray-900 bg-opacity-50 text-white pl-10 pr-10 py-3 rounded-xl border border-gray-600 border-opacity-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 focus:border-gray-500 focus:bg-gray-800 transition-all duration-300 text-sm placeholder-gray-500 hover:border-gray-500"
+              className={`w-full pl-10 pr-10 py-3 rounded-xl border border-opacity-50 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 text-sm ${
+                theme === 'dark'
+                  ? 'bg-gray-900 bg-opacity-50 text-white border-gray-600 focus:ring-gray-500 focus:border-gray-500 focus:bg-gray-800 placeholder-gray-500 hover:border-gray-500'
+                  : 'bg-gray-100 bg-opacity-50 text-black border-gray-300 focus:ring-gray-400 focus:border-gray-400 focus:bg-gray-50 placeholder-gray-400 hover:border-gray-400'
+              }`}
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white transition-all duration-300 p-1 rounded-lg hover:bg-gray-700 hover:scale-110 active:scale-95"
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 p-1 rounded-lg hover:scale-110 active:scale-95 ${
+                  theme === 'dark'
+                    ? 'text-gray-500 hover:text-white hover:bg-gray-700'
+                    : 'text-gray-400 hover:text-black hover:bg-gray-200'
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -982,16 +1200,24 @@ function SymbolSearchPopup({
         </div>
 
         {/* Category Tabs */}
-        <div className="px-4 py-3 border-b border-gray-700 border-opacity-50">
+        <div className={`px-4 py-3 border-b border-opacity-50 ${
+          theme === 'dark'
+            ? 'border-gray-700'
+            : 'border-gray-300'
+        }`}>
           <div className="flex flex-wrap gap-2 justify-between">
             {CATEGORIES.map((category, index) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 text-center transform hover:scale-105 active:scale-95 ${
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 text-center transform hover:scale-105 active:scale-95 border ${
                   selectedCategory === category
-                    ? "bg-gray-700 text-white shadow-lg border border-gray-600"
-                    : "bg-gray-800 bg-opacity-50 text-gray-300 hover:text-white hover:bg-gray-700 border border-gray-700 border-opacity-50 hover:border-gray-600"
+                    ? (theme === 'dark'
+                        ? "bg-gray-700 text-white shadow-lg border-gray-600"
+                        : "bg-gray-300 text-black shadow-lg border-gray-400")
+                    : (theme === 'dark'
+                        ? "bg-gray-800 bg-opacity-50 text-gray-300 hover:text-white hover:bg-gray-700 border-gray-700 border-opacity-50 hover:border-gray-600"
+                        : "bg-gray-100 bg-opacity-50 text-gray-700 hover:text-black hover:bg-gray-200 border-gray-300 border-opacity-50 hover:border-gray-400")
                 }`}
                 style={{
                   animationDelay: `${index * 50}ms`
@@ -1028,7 +1254,11 @@ function SymbolSearchPopup({
                 <div
                   key={`${item.symbol}-${item.exchange}-${index}`}
                   onClick={() => onSelect(item)}
-                  className="px-4 py-3 hover:bg-gray-800 hover:bg-opacity-70 cursor-pointer flex justify-between items-center border-b border-gray-700 border-opacity-30 last:border-b-0 transition-all duration-300 transform hover:translate-x-1 hover:shadow-lg group"
+                  className={`px-4 py-3 cursor-pointer flex justify-between items-center border-b border-opacity-30 last:border-b-0 transition-all duration-300 transform hover:translate-x-1 hover:shadow-lg group ${
+                    theme === 'dark'
+                      ? 'hover:bg-gray-800 hover:bg-opacity-70 border-gray-700'
+                      : 'hover:bg-gray-100 hover:bg-opacity-70 border-gray-300'
+                  }`}
                   style={{
                     animationDelay: `${index * 30}ms`
                   }}
@@ -1039,34 +1269,20 @@ function SymbolSearchPopup({
                       {getSymbolIcon(item)}
                     </div>
 
-                    {/* Symbol Info */}
+                    {/* Symbol Info - Only Symbol Name */}
                     <div className="flex flex-col">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-white text-sm transition-all duration-300 group-hover:text-gray-100">
+                      <div className="flex items-center">
+                        <span className={`font-semibold text-sm transition-all duration-300 ${
+                          theme === 'dark'
+                            ? 'text-white group-hover:text-gray-100'
+                            : 'text-black group-hover:text-gray-800'
+                        }`}>
                           {searchTerm ? (
                             <HighlightText text={item.symbol} highlight={searchTerm} />
                           ) : (
                             item.symbol
                           )}
                         </span>
-                        <span className="text-gray-400 font-medium text-sm transition-all duration-300 group-hover:text-gray-300">
-                          {searchTerm ? (
-                            <HighlightText text={item.name} highlight={searchTerm} />
-                          ) : (
-                            item.name
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Exchange and Type Info */}
-                  <div className="flex items-center space-x-3 text-xs">
-                    <span className="text-gray-500 font-medium transition-all duration-300 group-hover:text-gray-400">{item.type}</span>
-                    <div className="flex items-center space-x-1">
-                      <span className="text-gray-400 transition-all duration-300 group-hover:text-gray-300">{item.exchange}</span>
-                      <div className="w-2 h-2 rounded-full bg-gray-600 flex items-center justify-center transition-all duration-300 group-hover:bg-gray-500">
-                        <div className="w-1 h-1 rounded-full bg-gray-300"></div>
                       </div>
                     </div>
                   </div>
@@ -1074,19 +1290,27 @@ function SymbolSearchPopup({
               ))}
             </div>
           ) : searchTerm.trim() || selectedCategory !== "All" ? (
-            <div className="p-8 text-center text-gray-500 animate-pulse">
+            <div className={`p-8 text-center animate-pulse ${
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
+            }`}>
               <div className="text-lg mb-2 font-medium">No symbols found</div>
               <div className="text-sm">Try adjusting your search or category filter</div>
             </div>
           ) : (
-            <div className="p-8 text-center text-gray-500">
+            <div className={`p-8 text-center ${
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
+            }`}>
               <div className="text-lg mb-2 font-medium">Start typing to search</div>
               <div className="text-sm">Enter a symbol name or select a category to begin</div>
             </div>
           )}
         </div>
 
-        <div className="px-4 py-3 border-t border-gray-700 border-opacity-50 text-xs text-gray-500 text-center">
+        <div className={`px-4 py-3 border-t border-opacity-50 text-xs text-center ${
+          theme === 'dark'
+            ? 'border-gray-700 text-gray-500'
+            : 'border-gray-300 text-gray-600'
+        }`}>
           Simply start typing while on the chart to pull up this search box
         </div>
       </div>
@@ -1188,6 +1412,8 @@ function getCategoryBadgeStyle(category: string): string {
 
 // Helper component to highlight search matches
 function HighlightText({ text, highlight }: { text: string; highlight: string }) {
+  const { theme } = useTheme();
+
   if (!highlight.trim()) {
     return <span>{text}</span>;
   }
@@ -1199,7 +1425,11 @@ function HighlightText({ text, highlight }: { text: string; highlight: string })
     <span>
       {parts.map((part, i) =>
         regex.test(part) ? (
-          <span key={i} className="bg-gray-700 text-gray-100 px-1.5 py-0.5 rounded-md font-semibold shadow-sm">
+          <span key={i} className={`px-1.5 py-0.5 rounded-md font-semibold shadow-sm ${
+            theme === 'dark'
+              ? 'bg-gray-700 text-gray-100'
+              : 'bg-gray-300 text-gray-800'
+          }`}>
             {part}
           </span>
         ) : (
@@ -1218,19 +1448,14 @@ type ChartHeaderProps = {
 };
 
 export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd, isCodeEditorActive }: ChartHeaderProps) {
+  const { theme } = useTheme();
   const [currentSymbol, setCurrentSymbol] = useState<SymbolData>(DEFAULT_SYMBOL);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentTimeframe, setCurrentTimeframe] = useState("1m");
   const [isTimeframeOpen, setIsTimeframeOpen] = useState(false);
   const [isIndicatorsOpen, setIsIndicatorsOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const timeframeButtonRef = useRef<HTMLButtonElement>(null);
   const indicatorsButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Ensure client-side rendering for price data to prevent hydration mismatch
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleSymbolSelect = (symbol: SymbolData) => {
     setCurrentSymbol(symbol);
@@ -1296,7 +1521,11 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
   }, [isSearchOpen, isCodeEditorActive]);
 
   return (
-    <header className="h-[38px] bg-black border-b border-zinc-800 flex items-stretch px-0">
+    <header className={`h-[38px] flex items-stretch px-0 ${
+      theme === 'dark'
+        ? 'bg-black border-b border-zinc-800'
+        : 'bg-white border-b border-zinc-300'
+    }`}>
       {/* Left sidebar profile section - aligned with left sidebar width (52px) */}
       <div className="w-[52px] flex items-center justify-center">
         <ProfileDropdown />
@@ -1304,66 +1533,61 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
 
       {/* Main header content */}
       <div className="flex-1 flex items-center">
-        {/* Symbol Search section - square shaped button */}
-        <div className="h-full flex items-center">
-          <motion.button
-            onClick={() => setIsSearchOpen(true)}
-            className="flex items-center gap-3 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 rounded-md text-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-zinc-400"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <span className="font-medium tracking-wide">{currentSymbol.symbol}</span>
-            </div>
-
-            {/* Price and Change Display */}
-            {isClient && (
-              <div className="flex items-center gap-2 text-xs">
-                <span className="font-semibold text-white">
-                  {formatPrice(getLatestPrice(currentSymbol.symbol, currentTimeframe), currentSymbol.symbol)}
-                </span>
-                <span className={`font-medium px-1.5 py-0.5 ${
-                  getPriceChange(currentSymbol.symbol, currentTimeframe).change >= 0
-                    ? 'text-green-400 bg-green-900 bg-opacity-30'
-                    : 'text-red-400 bg-red-900 bg-opacity-30'
-                }`}>
-                  {getPriceChange(currentSymbol.symbol, currentTimeframe).change >= 0 ? '+' : ''}
-                  {getPriceChange(currentSymbol.symbol, currentTimeframe).changePercent.toFixed(2)}%
-                </span>
+        {/* Header buttons container with hover reveal behavior */}
+        <div className="flex items-center">
+          {/* Symbol Search section - square shaped button */}
+          <div className="h-full flex items-center">
+            <motion.button
+              onClick={() => setIsSearchOpen(true)}
+              className={`flex items-center justify-between gap-3 px-3 py-1.5 transition-all duration-300 rounded-md text-sm min-w-[220px] max-w-[300px] ${
+                theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`flex-shrink-0 ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}`}
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span className="font-medium tracking-wide truncate">{currentSymbol.symbol}</span>
               </div>
-            )}
-          </motion.button>
-        </div>
+              {/* Invisible spacer to maintain button width */}
+              <div className="w-8 flex-shrink-0"></div>
+            </motion.button>
+          </div>
 
-        {/* Vertical Separator Line */}
-        <div className="flex items-center px-3">
-          <div className="w-px h-5 bg-zinc-600"></div>
-        </div>
+          {/* Vertical Separator Line */}
+          <div className="flex items-center px-3">
+            <div className={`w-px h-5 ${theme === 'dark' ? 'bg-zinc-600' : 'bg-zinc-400'}`}></div>
+          </div>
 
-        {/* Timeframe Selector */}
-        <div className="h-full flex items-center">
-          <motion.button
-            ref={timeframeButtonRef}
-            onClick={() => setIsTimeframeOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 rounded-md text-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          {/* Timeframe Selector */}
+          <div className="h-full flex items-center">
+            <motion.button
+              ref={timeframeButtonRef}
+              onClick={() => setIsTimeframeOpen(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
+                theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
             <span className="font-medium">{currentTimeframe}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1375,27 +1599,31 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-zinc-400"
+              className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}
             >
               <polyline points="6,9 12,15 18,9"></polyline>
-            </svg>
-          </motion.button>
-        </div>
+              </svg>
+            </motion.button>
+          </div>
 
-        {/* Vertical Separator Line */}
-        <div className="flex items-center px-3">
-          <div className="w-px h-5 bg-zinc-600"></div>
-        </div>
+          {/* Vertical Separator Line */}
+          <div className="flex items-center px-3">
+            <div className={`w-px h-5 ${theme === 'dark' ? 'bg-zinc-600' : 'bg-zinc-400'}`}></div>
+          </div>
 
-        {/* Indicators Button */}
-        <div className="h-full flex items-center">
-          <motion.button
-            ref={indicatorsButtonRef}
-            onClick={() => setIsIndicatorsOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 rounded-md text-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          {/* Indicators Button */}
+          <div className="h-full flex items-center">
+            <motion.button
+              ref={indicatorsButtonRef}
+              onClick={() => setIsIndicatorsOpen(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
+                theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="12"
@@ -1406,13 +1634,14 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-zinc-400"
+              className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}
             >
               <path d="M3 3v18h18"></path>
               <path d="M7 12l3-3 3 3 5-5"></path>
             </svg>
-            <span className="font-medium">Indicators</span>
-          </motion.button>
+              <span className="font-medium">Indicators</span>
+            </motion.button>
+          </div>
         </div>
 
         {/* Empty space */}
@@ -1423,7 +1652,9 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
       <div className="w-[52px] flex items-center justify-center">
         <button
           onClick={() => window.location.href = '/'}
-          className="p-2 hover:bg-zinc-800 transition-colors duration-200"
+          className={`p-2 transition-colors duration-200 ${
+            theme === 'dark' ? 'hover:bg-zinc-800' : 'hover:bg-zinc-200'
+          }`}
           title="Exit"
         >
           <svg
@@ -1436,7 +1667,10 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-zinc-400 hover:text-zinc-300"
+            className={theme === 'dark'
+              ? 'text-zinc-400 hover:text-zinc-300'
+              : 'text-zinc-600 hover:text-zinc-700'
+            }
           >
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16,17 21,12 16,7"></polyline>

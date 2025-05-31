@@ -8,6 +8,7 @@ import { useChartDataQuery } from "@/lib/query-client";
 import { AppliedIndicator } from "./indicator-legend";
 import { calculateIndicator } from "@/lib/indicators";
 import { PerformanceWrapper } from "@/lib/performance";
+import { useTheme } from "@/lib/theme-context";
 
 interface TradingChartProps {
   isCrosshairMode: boolean;
@@ -17,6 +18,7 @@ interface TradingChartProps {
 }
 
 export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1H", appliedIndicators = [] }: TradingChartProps) {
+  const { theme } = useTheme();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -31,20 +33,23 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
     // Create the chart
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: '#000000' },
-        textColor: '#d4d4d8',
+        background: {
+          type: ColorType.Solid,
+          color: theme === 'dark' ? '#000000' : '#ffffff'
+        },
+        textColor: theme === 'dark' ? '#d4d4d8' : '#374151',
         fontSize: 12,
         fontFamily: 'system-ui, -apple-system, sans-serif',
       },
 
       grid: {
         vertLines: {
-          color: '#27272a',
+          color: theme === 'dark' ? '#27272a' : '#e5e7eb',
           style: 0,
           visible: true,
         },
         horzLines: {
-          color: '#27272a',
+          color: theme === 'dark' ? '#27272a' : '#e5e7eb',
           style: 0,
           visible: true,
         },
@@ -67,7 +72,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
         },
       },
       rightPriceScale: {
-        borderColor: '#27272a',
+        borderColor: theme === 'dark' ? '#27272a' : '#e5e7eb',
         borderVisible: true,
         entireTextOnly: false,
         visible: true,
@@ -77,7 +82,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
         },
       },
       timeScale: {
-        borderColor: '#27272a',
+        borderColor: theme === 'dark' ? '#27272a' : '#e5e7eb',
         borderVisible: true,
         timeVisible: true,
         secondsVisible: false,
@@ -220,7 +225,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
         chartRef.current = null;
       }
     };
-  }, [symbol, timeframe, chartData]);
+  }, [symbol, timeframe, chartData, theme]);
 
   // Update crosshair visibility when mode changes
   useEffect(() => {
@@ -395,10 +400,18 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
   // Show loading state
   if (isLoading) {
     return (
-      <div className="w-full h-full bg-black border border-zinc-800 rounded relative overflow-hidden flex items-center justify-center">
+      <div className={`w-full h-full rounded relative overflow-hidden flex items-center justify-center ${
+        theme === 'dark'
+          ? 'bg-black border border-zinc-800'
+          : 'bg-white border border-zinc-300'
+      }`}>
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-800 rounded mb-4 w-32"></div>
-          <div className="h-64 bg-gray-800 rounded"></div>
+          <div className={`h-4 rounded mb-4 w-32 ${
+            theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
+          }`}></div>
+          <div className={`h-64 rounded ${
+            theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
+          }`}></div>
         </div>
       </div>
     );
@@ -407,8 +420,12 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
   // Show error state
   if (error) {
     return (
-      <div className="w-full h-full bg-black border border-zinc-800 rounded relative overflow-hidden flex items-center justify-center">
-        <div className="text-red-400 text-center">
+      <div className={`w-full h-full rounded relative overflow-hidden flex items-center justify-center ${
+        theme === 'dark'
+          ? 'bg-black border border-zinc-800'
+          : 'bg-white border border-zinc-300'
+      }`}>
+        <div className={`text-center ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
           <div className="text-lg mb-2">Failed to load chart data</div>
           <div className="text-sm opacity-75">Please try again later</div>
         </div>
@@ -427,7 +444,11 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
           display: none !important;
         }
       `}</style>
-      <div className="w-full h-full bg-black border border-zinc-800 rounded relative overflow-hidden">
+      <div className={`w-full h-full rounded relative overflow-hidden ${
+        theme === 'dark'
+          ? 'bg-black border border-zinc-800'
+          : 'bg-white border border-zinc-300'
+      }`}>
         {/* Lightweight Charts Container */}
         <div
           ref={chartContainerRef}

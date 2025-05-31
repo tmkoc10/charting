@@ -64,12 +64,12 @@ export function PricingSection() {
   ];
 
   return (
-    <div className="py-20 dark:bg-black bg-white w-full">
+    <div className="py-20 bg-black w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
           <motion.h2
-            className="text-3xl md:text-5xl font-bold dark:text-white text-black mb-4"
+            className="text-3xl md:text-5xl font-bold text-white mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}

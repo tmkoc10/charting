@@ -39,8 +39,8 @@ const algoScriptCompletion = (context: any) => {
   };
 };
 
-// TradingView-style theme
-const tradingViewTheme = EditorViewTheme.theme({
+// TradingView-style dark theme
+const tradingViewDarkTheme = EditorViewTheme.theme({
   '@keyframes blink': {
     '0%, 50%': { opacity: '1' },
     '51%, 100%': { opacity: '0' }
@@ -131,8 +131,101 @@ const tradingViewTheme = EditorViewTheme.theme({
   },
 }, { dark: true });
 
-// Custom Algo Script highlighting - Exact TradingView Pine Script colors
-const algoScriptHighlight = HighlightStyle.define([
+// TradingView-style light theme
+const tradingViewLightTheme = EditorViewTheme.theme({
+  '@keyframes blink': {
+    '0%, 50%': { opacity: '1' },
+    '51%, 100%': { opacity: '0' }
+  },
+  '&': {
+    color: '#333333',
+    backgroundColor: '#ffffff',
+    fontSize: '14px',
+    fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
+  },
+  '.cm-content': {
+    padding: '16px',
+    caretColor: '#000000',
+    lineHeight: '1.5',
+  },
+  '.cm-focused .cm-cursor': {
+    borderLeftColor: '#000000',
+    borderLeftWidth: '2px',
+    animation: 'blink 1s step-end infinite',
+  },
+  '.cm-cursor': {
+    borderLeftColor: '#000000',
+    borderLeftWidth: '2px',
+    animation: 'blink 1s step-end infinite',
+  },
+  '.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
+    backgroundColor: '#add6ff',
+  },
+  '.cm-panels': {
+    backgroundColor: '#ffffff',
+    color: '#333333',
+  },
+  '.cm-panels.cm-panels-top': {
+    borderBottom: '1px solid #e1e4e8',
+  },
+  '.cm-panels.cm-panels-bottom': {
+    borderTop: '1px solid #e1e4e8',
+  },
+  '.cm-searchMatch': {
+    backgroundColor: '#fff2cc',
+    outline: '1px solid #ffd33d',
+  },
+  '.cm-searchMatch.cm-searchMatch-selected': {
+    backgroundColor: '#ffd33d',
+  },
+  '.cm-activeLine': {
+    backgroundColor: '#f5f5f5',
+  },
+  '.cm-selectionMatch': {
+    backgroundColor: '#fff2cc',
+  },
+  '.cm-matchingBracket, .cm-nonmatchingBracket': {
+    backgroundColor: '#e6f3ff',
+    outline: '1px solid #b3d9ff',
+  },
+  '.cm-gutters': {
+    backgroundColor: '#ffffff',
+    color: '#6e7681',
+    border: 'none',
+    borderRight: '1px solid #e1e4e8',
+  },
+  '.cm-activeLineGutter': {
+    backgroundColor: '#f5f5f5',
+  },
+  '.cm-foldPlaceholder': {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: '#666',
+  },
+  '.cm-tooltip': {
+    border: '1px solid #e1e4e8',
+    backgroundColor: '#ffffff',
+    color: '#333333',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+  },
+  '.cm-tooltip .cm-tooltip-arrow:before': {
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+  },
+  '.cm-tooltip .cm-tooltip-arrow:after': {
+    borderTopColor: '#ffffff',
+    borderBottomColor: '#ffffff',
+  },
+  '.cm-tooltip-autocomplete': {
+    '& > ul > li[aria-selected]': {
+      backgroundColor: '#0366d6',
+      color: '#ffffff',
+    },
+  },
+}, { dark: false });
+
+// Custom Algo Script highlighting - Dark theme colors
+const algoScriptDarkHighlight = HighlightStyle.define([
   { tag: tags.keyword, color: '#569cd6', fontWeight: 'bold' }, // Blue keywords like 'indicator', 'strategy'
   { tag: tags.string, color: '#ce9178' }, // Orange strings
   { tag: tags.comment, color: '#6a9955', fontStyle: 'italic' }, // Green comments
@@ -147,6 +240,24 @@ const algoScriptHighlight = HighlightStyle.define([
   { tag: tags.invalid, color: '#f44747', textDecoration: 'underline' }, // Red errors
   { tag: tags.propertyName, color: '#9cdcfe' }, // Light blue properties
   { tag: tags.typeName, color: '#4ec9b0' }, // Teal type names
+]);
+
+// Custom Algo Script highlighting - Light theme colors
+const algoScriptLightHighlight = HighlightStyle.define([
+  { tag: tags.keyword, color: '#0000ff', fontWeight: 'bold' }, // Blue keywords like 'indicator', 'strategy'
+  { tag: tags.string, color: '#a31515' }, // Red strings
+  { tag: tags.comment, color: '#008000', fontStyle: 'italic' }, // Green comments
+  { tag: tags.number, color: '#098658' }, // Dark green numbers
+  { tag: tags.function(tags.variableName), color: '#795e26', fontWeight: 'bold' }, // Brown functions
+  { tag: tags.variableName, color: '#001080' }, // Dark blue variables
+  { tag: tags.operator, color: '#000000' }, // Black operators
+  { tag: tags.bracket, color: '#0431fa' }, // Blue brackets
+  { tag: tags.punctuation, color: '#000000' }, // Black punctuation
+  { tag: tags.bool, color: '#0000ff' }, // Blue booleans
+  { tag: tags.null, color: '#0000ff' }, // Blue null/na
+  { tag: tags.invalid, color: '#cd3131', textDecoration: 'underline' }, // Red errors
+  { tag: tags.propertyName, color: '#001080' }, // Dark blue properties
+  { tag: tags.typeName, color: '#267f99' }, // Teal type names
 ]);
 
 interface AlgoScriptEditorProps {
@@ -193,9 +304,9 @@ plot(close)`;
         lineNumbers(),
         keymap.of([indentWithTab]),
         javascript(),
-        syntaxHighlighting(algoScriptHighlight),
+        syntaxHighlighting(theme === 'dark' ? algoScriptDarkHighlight : algoScriptLightHighlight),
         autocompletion({ override: [algoScriptCompletion] }),
-        tradingViewTheme, // Use custom TradingView theme
+        theme === 'dark' ? tradingViewDarkTheme : tradingViewLightTheme, // Use theme-appropriate editor theme
       ];
 
       if (readOnly) {
@@ -364,9 +475,17 @@ plot(close)`;
   };
 
   return (
-    <div className="flex flex-col h-full bg-black text-white" data-editor="true">
+    <div className={`flex flex-col h-full ${
+      theme === 'dark'
+        ? 'bg-black text-white'
+        : 'bg-white text-black'
+    }`} data-editor="true">
       {/* Header matching chart interface standards - 38px height */}
-      <div className="h-[38px] bg-black border-b border-zinc-800 flex items-stretch px-0">
+      <div className={`h-[38px] flex items-stretch px-0 ${
+        theme === 'dark'
+          ? 'bg-black border-b border-zinc-800'
+          : 'bg-white border-b border-zinc-300'
+      }`}>
         {/* Left section: Traffic lights + editable title */}
         <div className="flex items-center px-4 gap-3">
           {/* Traffic light buttons matching sidebar style */}
@@ -385,14 +504,22 @@ plot(close)`;
                 onChange={(e) => setTempTitle(e.target.value)}
                 onBlur={handleTitleSave}
                 onKeyDown={handleTitleKeyDown}
-                className="bg-zinc-900 border border-zinc-700 text-white text-sm font-medium px-3 py-1.5 rounded-full focus:border-zinc-400 focus:outline-none min-w-[140px] shadow-sm"
+                className={`text-sm font-medium px-3 py-1.5 rounded-full focus:outline-none min-w-[140px] shadow-sm ${
+                  theme === 'dark'
+                    ? 'bg-zinc-900 border border-zinc-700 text-white focus:border-zinc-400'
+                    : 'bg-zinc-100 border border-zinc-300 text-black focus:border-zinc-500'
+                }`}
                 autoFocus
                 maxLength={50}
               />
             ) : (
               <button
                 onClick={handleTitleClick}
-                className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
+                className={`text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 active:scale-95 ${
+                  theme === 'dark'
+                    ? 'bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white'
+                    : 'bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-black'
+                }`}
                 title="Click to edit script name"
               >
                 {scriptTitle}
@@ -403,14 +530,20 @@ plot(close)`;
 
         {/* Center section: Version indicator */}
         <div className="flex-1 flex items-center justify-center">
-          <span className="text-xs text-zinc-500">• Algo Script v1.0</span>
+          <span className={`text-xs ${
+            theme === 'dark' ? 'text-zinc-500' : 'text-zinc-600'
+          }`}>• Algo Script v1.0</span>
         </div>
 
         {/* Right section: Action buttons - responsive design */}
         <div className="flex items-center px-4 gap-2">
           <button
             onClick={handleSave}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-md font-medium shadow-sm hover:shadow-md"
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors duration-200 rounded-md font-medium shadow-sm hover:shadow-md ${
+              theme === 'dark'
+                ? 'bg-zinc-900 hover:bg-zinc-800 text-white'
+                : 'bg-zinc-100 hover:bg-zinc-200 text-black'
+            }`}
             title="Save script"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -424,7 +557,7 @@ plot(close)`;
             disabled={isRunning}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all duration-200 rounded-md font-medium shadow-sm hover:shadow-md ${
               isRunning
-                ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
+                ? (theme === 'dark' ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-zinc-300 text-zinc-500 cursor-not-allowed')
                 : 'bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 active:scale-95'
             }`}
             title={isRunning ? "Running..." : "Add script to chart"}
@@ -448,7 +581,11 @@ plot(close)`;
 
           <button
             onClick={handlePublish}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-200 rounded-md font-medium shadow-sm hover:shadow-md"
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors duration-200 rounded-md font-medium shadow-sm hover:shadow-md ${
+              theme === 'dark'
+                ? 'bg-zinc-900 hover:bg-zinc-800 text-white'
+                : 'bg-zinc-100 hover:bg-zinc-200 text-black'
+            }`}
             title="Publish strategy"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -460,7 +597,9 @@ plot(close)`;
       </div>
 
       {/* Editor container with right panel */}
-      <div className="flex-1 relative bg-black flex gap-1">
+      <div className={`flex-1 relative flex gap-1 ${
+        theme === 'dark' ? 'bg-black' : 'bg-white'
+      }`}>
         {/* Main editor area */}
         <div className="flex-1 relative code-editor">
           <div
@@ -471,7 +610,11 @@ plot(close)`;
 
         {/* Right panel - matches sidebar width */}
         <div className="w-[52px] flex-shrink-0">
-          <div className="w-full h-full bg-black border border-zinc-800 rounded flex flex-col">
+          <div className={`w-full h-full rounded flex flex-col ${
+            theme === 'dark'
+              ? 'bg-black border border-zinc-800'
+              : 'bg-white border border-zinc-300'
+          }`}>
             {/* Panel content */}
             <div className="flex flex-col items-center pt-3 pb-2">
               {/* Question mark icon - standalone without container */}
@@ -491,7 +634,9 @@ plot(close)`;
 
               {/* Horizontal divider - closer spacing for visual connection */}
               <div className="w-full flex justify-center mb-5">
-                <div className="h-px w-8 bg-white"></div>
+                <div className={`h-px w-8 ${
+                  theme === 'dark' ? 'bg-white' : 'bg-zinc-400'
+                }`}></div>
               </div>
 
               {/* Open book icon - standalone without container */}
@@ -515,7 +660,9 @@ plot(close)`;
 
               {/* Horizontal divider - closer spacing for visual connection */}
               <div className="w-full flex justify-center mb-5">
-                <div className="h-px w-8 bg-white"></div>
+                <div className={`h-px w-8 ${
+                  theme === 'dark' ? 'bg-white' : 'bg-zinc-400'
+                }`}></div>
               </div>
 
               {/* AI logo icon - standalone without container */}
@@ -544,7 +691,9 @@ plot(close)`;
 
               {/* Horizontal divider - closer spacing for visual connection */}
               <div className="w-full flex justify-center mb-5">
-                <div className="h-px w-8 bg-white"></div>
+                <div className={`h-px w-8 ${
+                  theme === 'dark' ? 'bg-white' : 'bg-zinc-400'
+                }`}></div>
               </div>
             </div>
           </div>
@@ -552,27 +701,43 @@ plot(close)`;
       </div>
 
       {/* Bottom Status Bar - Professional styling with responsive design */}
-      <div className="h-6 bg-black border-t border-zinc-800 flex items-center justify-between px-4 text-xs">
+      <div className={`h-6 flex items-center justify-between px-4 text-xs ${
+        theme === 'dark'
+          ? 'bg-black border-t border-zinc-800'
+          : 'bg-white border-t border-zinc-300'
+      }`}>
         {/* Left side: Cursor position and version */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <span className="text-zinc-400 font-mono">
+          <span className={`font-mono ${
+            theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'
+          }`}>
             Line {cursorPosition.line}, Col {cursorPosition.col}
           </span>
-          <div className="w-px h-3 bg-zinc-600 hidden sm:block"></div>
-          <span className="text-zinc-500 hidden sm:inline">
+          <div className={`w-px h-3 hidden sm:block ${
+            theme === 'dark' ? 'bg-zinc-600' : 'bg-zinc-400'
+          }`}></div>
+          <span className={`hidden sm:inline ${
+            theme === 'dark' ? 'text-zinc-500' : 'text-zinc-600'
+          }`}>
             Algo Script v6
           </span>
         </div>
 
         {/* Right side: Status information */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <span className="text-zinc-500 hidden sm:inline">
+          <span className={`hidden sm:inline ${
+            theme === 'dark' ? 'text-zinc-500' : 'text-zinc-600'
+          }`}>
             {characterCount} characters
           </span>
-          <div className="w-px h-3 bg-zinc-600 hidden sm:block"></div>
+          <div className={`w-px h-3 hidden sm:block ${
+            theme === 'dark' ? 'bg-zinc-600' : 'bg-zinc-400'
+          }`}></div>
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-            <span className="text-zinc-400">Ready</span>
+            <span className={`${
+              theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'
+            }`}>Ready</span>
           </div>
         </div>
       </div>

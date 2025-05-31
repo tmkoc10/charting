@@ -29,7 +29,7 @@ function Navbar({ className }: { className?: string }) {
           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">A</span>
           </div>
-          <span className="text-xl font-bold text-black dark:text-white">Algoz Tech</span>
+          <span className="text-xl font-bold text-white">Algoz Tech</span>
         </div>
 
         {/* Menu Items */}

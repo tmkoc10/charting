@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, Info, TrendingUp, BarChart3, TrendingDown } from "lucide-react";
+import { useTheme } from "@/lib/theme-context";
 import { TabType, ChartToggleState, ViewMode } from "./types";
 import { mockStrategyResults } from "./mockData";
 import { MetricsCards } from "./MetricsCards";
@@ -10,6 +11,7 @@ import { TabNavigation } from "./TabNavigation";
 import { TradesList } from "./TradesList";
 
 export function StrategyTester() {
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [isDeepBacktesting, setIsDeepBacktesting] = useState(true);
   const [chartToggles, setChartToggles] = useState<ChartToggleState>({
@@ -38,11 +40,21 @@ export function StrategyTester() {
             <MetricsCards metrics={mockStrategyResults.metrics} />
 
             {/* Main Chart */}
-            <div className="h-[500px] bg-zinc-900 border border-zinc-700 rounded-lg flex items-center justify-center">
+            <div className={`h-[500px] rounded-lg flex items-center justify-center ${
+              theme === 'dark'
+                ? 'bg-zinc-900 border border-zinc-700'
+                : 'bg-zinc-100 border border-zinc-300'
+            }`}>
               <div className="text-center">
-                <h3 className="text-lg font-semibold text-white mb-2">Strategy Performance Chart</h3>
-                <p className="text-zinc-400 mb-4">Equity curve and drawdown visualization</p>
-                <div className="text-sm text-zinc-500">
+                <h3 className={`text-lg font-semibold mb-2 ${
+                  theme === 'dark' ? 'text-white' : 'text-black'
+                }`}>Strategy Performance Chart</h3>
+                <p className={`mb-4 ${
+                  theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'
+                }`}>Equity curve and drawdown visualization</p>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-zinc-500' : 'text-zinc-500'
+                }`}>
                   Chart will be rendered here with lightweight-charts
                 </div>
               </div>
@@ -92,8 +104,12 @@ export function StrategyTester() {
                   onClick={() => setViewMode('absolute')}
                   className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                     viewMode === 'absolute'
-                      ? 'bg-zinc-700 text-white'
-                      : 'bg-zinc-800 text-zinc-400 hover:text-zinc-300'
+                      ? (theme === 'dark'
+                          ? 'bg-zinc-700 text-white'
+                          : 'bg-zinc-300 text-black')
+                      : (theme === 'dark'
+                          ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-300'
+                          : 'bg-zinc-200 text-zinc-600 hover:text-zinc-700')
                   }`}
                 >
                   Absolute
@@ -102,8 +118,12 @@ export function StrategyTester() {
                   onClick={() => setViewMode('percentage')}
                   className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                     viewMode === 'percentage'
-                      ? 'bg-zinc-700 text-white'
-                      : 'bg-zinc-800 text-zinc-400 hover:text-zinc-300'
+                      ? (theme === 'dark'
+                          ? 'bg-zinc-700 text-white'
+                          : 'bg-zinc-300 text-black')
+                      : (theme === 'dark'
+                          ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-300'
+                          : 'bg-zinc-200 text-zinc-600 hover:text-zinc-700')
                   }`}
                 >
                   Percentage
@@ -120,54 +140,70 @@ export function StrategyTester() {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Additional Metrics</h3>
+              <div className={`rounded-lg p-6 ${
+                theme === 'dark'
+                  ? 'bg-zinc-900 border border-zinc-700'
+                  : 'bg-zinc-100 border border-zinc-300'
+              }`}>
+                <h3 className={`text-lg font-semibold mb-4 ${
+                  theme === 'dark' ? 'text-white' : 'text-black'
+                }`}>Additional Metrics</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Sharpe Ratio</span>
-                    <span className="text-white font-medium">{mockStrategyResults.metrics.sharpeRatio}</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Sharpe Ratio</span>
+                    <span className={`font-medium ${
+                      theme === 'dark' ? 'text-white' : 'text-black'
+                    }`}>{mockStrategyResults.metrics.sharpeRatio}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Sortino Ratio</span>
-                    <span className="text-white font-medium">{mockStrategyResults.metrics.sortinoRatio}</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Sortino Ratio</span>
+                    <span className={`font-medium ${
+                      theme === 'dark' ? 'text-white' : 'text-black'
+                    }`}>{mockStrategyResults.metrics.sortinoRatio}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Largest Win</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Largest Win</span>
                     <span className="text-green-400 font-medium">
                       ${mockStrategyResults.metrics.largestWin.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Largest Loss</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Largest Loss</span>
                     <span className="text-red-400 font-medium">
                       ${mockStrategyResults.metrics.largestLoss.toFixed(2)}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Trade Statistics</h3>
+              <div className={`rounded-lg p-6 ${
+                theme === 'dark'
+                  ? 'bg-zinc-900 border border-zinc-700'
+                  : 'bg-zinc-100 border border-zinc-300'
+              }`}>
+                <h3 className={`text-lg font-semibold mb-4 ${
+                  theme === 'dark' ? 'text-white' : 'text-black'
+                }`}>Trade Statistics</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Average Win</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Average Win</span>
                     <span className="text-green-400 font-medium">
                       ${mockStrategyResults.metrics.avgWin.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Average Loss</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Average Loss</span>
                     <span className="text-red-400 font-medium">
                       ${mockStrategyResults.metrics.avgLoss.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Gross Profit</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Gross Profit</span>
                     <span className="text-green-400 font-medium">
                       ${mockStrategyResults.metrics.grossProfit.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Gross Loss</span>
+                    <span className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}>Gross Loss</span>
                     <span className="text-red-400 font-medium">
                       ${mockStrategyResults.metrics.grossLoss.toFixed(2)}
                     </span>
@@ -193,13 +229,25 @@ export function StrategyTester() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-black text-white">
+    <div className={`h-full flex flex-col ${
+      theme === 'dark'
+        ? 'bg-black text-white'
+        : 'bg-white text-black'
+    }`}>
       {/* Header Section */}
-      <div className="bg-zinc-900 border-b border-zinc-700 px-4 py-2.5 h-[38px] flex items-center">
+      <div className={`px-4 py-2.5 h-[38px] flex items-center ${
+        theme === 'dark'
+          ? 'bg-zinc-900 border-b border-zinc-700'
+          : 'bg-zinc-100 border-b border-zinc-300'
+      }`}>
         <div className="flex items-center justify-between w-full">
           {/* Left side - Strategy title dropdown */}
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 text-white hover:text-zinc-300 transition-colors">
+            <button className={`flex items-center gap-2 transition-colors ${
+              theme === 'dark'
+                ? 'text-white hover:text-zinc-300'
+                : 'text-black hover:text-zinc-700'
+            }`}>
               <span className="font-medium text-sm truncate max-w-96">
                 {mockStrategyResults.strategyName}
               </span>
@@ -210,7 +258,7 @@ export function StrategyTester() {
           {/* Right side - Deep Backtesting toggle */}
           <div className="flex items-center gap-2">
             <label className="flex items-center gap-2 text-sm">
-              <span className="text-zinc-300">Deep Backtesting</span>
+              <span className={theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'}>Deep Backtesting</span>
               <div className="relative">
                 <input
                   type="checkbox"

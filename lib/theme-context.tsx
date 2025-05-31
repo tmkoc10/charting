@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 
 type Theme = 'light' | 'dark';
 
@@ -17,51 +18,70 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+
+  // Check if current route should use theme system (only charts page)
+  const isChartsPage = pathname?.startsWith('/charts');
 
   // Handle hydration mismatch by only setting theme after mount
   useEffect(() => {
     setMounted(true);
-    
-    // Get theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem('theme') as Theme;
+
+    // Only apply theme system to charts page
+    if (!isChartsPage) return;
+
+    // Get theme from localStorage or default to light
+    const savedTheme = localStorage.getItem('charts-theme') as Theme;
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       setThemeState(savedTheme);
     } else {
-      // Default to dark theme
-      setThemeState('dark');
-      localStorage.setItem('theme', 'dark');
+      // Default to light theme for charts
+      setThemeState('light');
+      localStorage.setItem('charts-theme', 'light');
     }
-  }, []);
+  }, [isChartsPage]);
 
   // Update document class and localStorage when theme changes
   useEffect(() => {
     if (!mounted) return;
 
     const root = document.documentElement;
-    
-    // Remove existing theme classes
-    root.classList.remove('light', 'dark');
-    
-    // Add current theme class
-    root.classList.add(theme);
-    
-    // Save to localStorage
-    localStorage.setItem('theme', theme);
-  }, [theme, mounted]);
+
+    if (isChartsPage) {
+      // Remove existing theme classes
+      root.classList.remove('light', 'dark');
+
+      // Add current theme class
+      root.classList.add(theme);
+
+      // Save to localStorage with charts-specific key
+      localStorage.setItem('charts-theme', theme);
+    } else {
+      // For non-charts pages, force dark theme classes for landing page
+      root.classList.remove('light', 'dark');
+      root.classList.add('dark');
+    }
+  }, [theme, mounted, isChartsPage]);
 
   const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
+    // Only allow theme changes on charts page
+    if (isChartsPage) {
+      setThemeState(newTheme);
+    }
   };
 
   const toggleTheme = () => {
-    setThemeState(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    // Only allow theme toggle on charts page
+    if (isChartsPage) {
+      setThemeState(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    }
   };
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
-    return <div className="dark">{children}</div>;
+    return <div className={isChartsPage ? "light" : "dark"}>{children}</div>;
   }
 
   return (

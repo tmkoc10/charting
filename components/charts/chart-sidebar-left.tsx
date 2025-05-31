@@ -15,7 +15,11 @@ export function ChartSidebarLeft({ isCrosshairMode, onCrosshairToggle }: ChartSi
   };
 
   return (
-    <div className="w-full h-full bg-black border border-zinc-800 rounded flex flex-col">
+    <div className={`w-full h-full rounded flex flex-col ${
+      theme === 'dark'
+        ? 'bg-black border border-zinc-800'
+        : 'bg-white border border-zinc-300'
+    }`}>
       {/* Mouse Cursor Logo - No divider below */}
       <div
         className="w-full flex justify-center pt-3 !border-0 !border-none"
@@ -27,7 +31,11 @@ export function ChartSidebarLeft({ isCrosshairMode, onCrosshairToggle }: ChartSi
       >
         <button
           onClick={toggleCursor}
-          className="p-2 rounded hover:bg-zinc-800 transition-colors duration-200 !border-0 !border-none"
+          className={`p-2 rounded transition-colors duration-200 !border-0 !border-none ${
+            theme === 'dark'
+              ? 'hover:bg-zinc-800'
+              : 'hover:bg-zinc-200'
+          }`}
           style={{ borderBottom: 'none !important', borderTop: 'none !important' }}
         >
           <svg
@@ -36,7 +44,10 @@ export function ChartSidebarLeft({ isCrosshairMode, onCrosshairToggle }: ChartSi
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="text-zinc-400 hover:text-zinc-300"
+            className={theme === 'dark'
+              ? 'text-zinc-400 hover:text-zinc-300'
+              : 'text-zinc-600 hover:text-zinc-700'
+            }
           >
             {isCrosshairMode ? (
               // Crosshair - horizontal and vertical lines intersecting
@@ -79,7 +90,11 @@ export function ChartSidebarLeft({ isCrosshairMode, onCrosshairToggle }: ChartSi
       <div className="w-full flex justify-center pt-3">
         <button
           onClick={toggleTheme}
-          className="p-2 rounded hover:bg-zinc-800 transition-colors duration-200"
+          className={`p-2 rounded transition-colors duration-200 ${
+            theme === 'dark'
+              ? 'hover:bg-zinc-800'
+              : 'hover:bg-zinc-200'
+          }`}
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
         >
           <svg
@@ -88,10 +103,13 @@ export function ChartSidebarLeft({ isCrosshairMode, onCrosshairToggle }: ChartSi
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="text-zinc-400 hover:text-zinc-300"
+            className={theme === 'dark'
+              ? 'text-zinc-400 hover:text-zinc-300'
+              : 'text-zinc-600 hover:text-zinc-700'
+            }
           >
-            {theme === 'dark' ? (
-              // Moon icon - hollow/outline style
+            {theme === 'light' ? (
+              // Moon icon - hollow/outline style (show in light mode to switch to dark)
               <path
                 d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
                 fill="none"
@@ -101,7 +119,7 @@ export function ChartSidebarLeft({ isCrosshairMode, onCrosshairToggle }: ChartSi
                 strokeLinejoin="round"
               />
             ) : (
-              // Sun icon - hollow/outline style
+              // Sun icon - hollow/outline style (show in dark mode to switch to light)
               <>
                 <circle
                   cx="12"
