@@ -11,6 +11,7 @@ import { tags } from '@lezer/highlight';
 import { autocompletion } from '@codemirror/autocomplete';
 import { javascript } from '@codemirror/lang-javascript';
 import { EditorView as EditorViewTheme } from '@codemirror/view';
+import { Input } from '@/components/ui/input';
 
 // Algo Script keywords for autocomplete
 const algoScriptKeywords = [
@@ -287,8 +288,6 @@ const AlgoScriptEditor: React.FC<AlgoScriptEditorProps> = ({
   const [cursorPosition, setCursorPosition] = useState({ line: 1, col: 1 });
   const [characterCount, setCharacterCount] = useState(0);
   const [scriptTitle, setScriptTitle] = useState("Untitled Script");
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [tempTitle, setTempTitle] = useState("");
 
   const defaultAlgoScript = `// This Algo Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // © takac1023
@@ -448,31 +447,7 @@ plot(close)`;
     }
   };
 
-  const handleTitleClick = () => {
-    setIsEditingTitle(true);
-    setTempTitle(scriptTitle);
-  };
 
-  const handleTitleSave = () => {
-    if (tempTitle.trim()) {
-      setScriptTitle(tempTitle.trim());
-    }
-    setIsEditingTitle(false);
-    setTempTitle("");
-  };
-
-  const handleTitleCancel = () => {
-    setIsEditingTitle(false);
-    setTempTitle("");
-  };
-
-  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleTitleSave();
-    } else if (e.key === 'Escape') {
-      handleTitleCancel();
-    }
-  };
 
   return (
     <div className={`flex flex-col h-full ${
@@ -480,8 +455,8 @@ plot(close)`;
         ? 'bg-black text-white'
         : 'bg-white text-black'
     }`} data-editor="true">
-      {/* Header matching chart interface standards - 38px height */}
-      <div className={`h-[38px] flex items-stretch px-0 ${
+      {/* Header matching chart interface standards - 44px height for enhanced presence */}
+      <div className={`h-[44px] flex items-stretch px-0 ${
         theme === 'dark'
           ? 'bg-black border-b border-zinc-800'
           : 'bg-white border-b border-zinc-300'
@@ -495,43 +470,27 @@ plot(close)`;
             <div className="w-2.5 h-2.5 rounded-full bg-green-500 hover:bg-green-400 transition-colors cursor-pointer"></div>
           </div>
 
-          {/* Editable script title with capsule styling */}
+          {/* Script title input using shadcn Input component */}
           <div className="flex items-center">
-            {isEditingTitle ? (
-              <input
-                type="text"
-                value={tempTitle}
-                onChange={(e) => setTempTitle(e.target.value)}
-                onBlur={handleTitleSave}
-                onKeyDown={handleTitleKeyDown}
-                className={`text-sm font-medium px-3 py-1.5 rounded-full focus:outline-none min-w-[140px] shadow-sm ${
-                  theme === 'dark'
-                    ? 'bg-zinc-900 border border-zinc-700 text-white focus:border-zinc-400'
-                    : 'bg-zinc-100 border border-zinc-300 text-black focus:border-zinc-500'
-                }`}
-                autoFocus
-                maxLength={50}
-              />
-            ) : (
-              <button
-                onClick={handleTitleClick}
-                className={`text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 active:scale-95 ${
-                  theme === 'dark'
-                    ? 'bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white'
-                    : 'bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-black'
-                }`}
-                title="Click to edit script name"
-              >
-                {scriptTitle}
-              </button>
-            )}
+            <Input
+              type="text"
+              value={scriptTitle}
+              onChange={(e) => setScriptTitle(e.target.value)}
+              className={`text-sm font-medium h-8 min-w-[140px] max-w-[200px] rounded-none shadow-sm ${
+                theme === 'dark'
+                  ? 'bg-zinc-900 border-zinc-700 text-white focus:border-zinc-400'
+                  : 'bg-zinc-100 border-zinc-300 text-black focus:border-zinc-500'
+              }`}
+              placeholder="Script name"
+              maxLength={50}
+            />
           </div>
         </div>
 
-        {/* Center section: Version indicator */}
-        <div className="flex-1 flex items-center justify-center">
-          <span className={`text-xs ${
-            theme === 'dark' ? 'text-zinc-500' : 'text-zinc-600'
+        {/* Center section: Version indicator - Much larger with enhanced presence */}
+        <div className="flex-1 flex items-center justify-center px-12 py-2">
+          <span className={`text-base font-semibold ${
+            theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'
           }`}>• Algo Script v1.0</span>
         </div>
 
@@ -615,86 +574,111 @@ plot(close)`;
               ? 'bg-black border border-zinc-800'
               : 'bg-white border border-zinc-300'
           }`}>
-            {/* Panel content */}
-            <div className="flex flex-col items-center pt-3 pb-2">
-              {/* Question mark icon - standalone without container */}
+            {/* Panel content - Enhanced professional styling */}
+            <div className="flex flex-col items-center pt-4 pb-3">
+              {/* Question mark icon - Enhanced hollow/outline style */}
               <svg
-                width="36"
-                height="36"
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-zinc-400 hover:text-zinc-300 transition-colors duration-200 cursor-pointer mb-5"
+                className={`transition-all duration-300 cursor-pointer mb-6 hover:scale-110 ${
+                  theme === 'dark'
+                    ? 'text-zinc-400 hover:text-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-700'
+                }`}
               >
+                {/* Question mark shape - hollow outline style */}
                 <path
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"
+                  d="M7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5C16.5 9.5 15 10.5 13.5 11.5C12.5 12.1667 12 12.5 12 13.5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+                {/* Question mark dot */}
+                <circle
+                  cx="12"
+                  cy="18"
+                  r="1"
                   fill="currentColor"
                 />
               </svg>
 
-              {/* Horizontal divider - closer spacing for visual connection */}
-              <div className="w-full flex justify-center mb-5">
-                <div className={`h-px w-8 ${
-                  theme === 'dark' ? 'bg-white' : 'bg-zinc-400'
-                }`}></div>
-              </div>
-
-              {/* Open book icon - standalone without container */}
+              {/* Open book icon - Enhanced hollow/outline style */}
               <svg
-                width="36"
-                height="36"
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-zinc-400 hover:text-zinc-300 transition-colors duration-200 cursor-pointer mb-5"
+                className={`transition-all duration-300 cursor-pointer mb-6 hover:scale-110 ${
+                  theme === 'dark'
+                    ? 'text-zinc-400 hover:text-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-700'
+                }`}
               >
+                {/* Book pages - hollow outline style */}
                 <path
                   d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"
-                  fill="currentColor"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
                 />
                 <path
                   d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"
-                  fill="currentColor"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+                {/* Book spine */}
+                <path
+                  d="M12 7v14"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
 
-              {/* Horizontal divider - closer spacing for visual connection */}
-              <div className="w-full flex justify-center mb-5">
-                <div className={`h-px w-8 ${
-                  theme === 'dark' ? 'bg-white' : 'bg-zinc-400'
-                }`}></div>
-              </div>
-
-              {/* AI logo icon - standalone without container */}
+              {/* AI logo icon - Matching main sidebar design exactly */}
               <svg
-                width="36"
-                height="36"
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-zinc-400 hover:text-zinc-300 transition-colors duration-200 cursor-pointer mb-5"
+                className={`transition-all duration-300 cursor-pointer hover:scale-110 ${
+                  theme === 'dark'
+                    ? 'text-zinc-400 hover:text-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-700'
+                }`}
               >
-                {/* AI text logo - bold, clean letterforms */}
-                <text
-                  x="12"
-                  y="16"
-                  textAnchor="middle"
-                  fontSize="14"
-                  fontWeight="700"
-                  fontFamily="system-ui, -apple-system, sans-serif"
-                  fill="currentColor"
-                  letterSpacing="0.5"
-                >
-                  AI
-                </text>
+                {/* Letter "A" - hollow outline with transparent center */}
+                <path
+                  d="M3 20L7.5 6H8.5L13 20H11.2L10.1 17H5.9L4.8 20H3ZM6.5 15H9.5L8 10.5L6.5 15Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+                {/* Letter "I" - hollow outline with transparent center */}
+                <path
+                  d="M16 6H21V8H19V18H21V20H16V18H18V8H16V6Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
               </svg>
-
-              {/* Horizontal divider - closer spacing for visual connection */}
-              <div className="w-full flex justify-center mb-5">
-                <div className={`h-px w-8 ${
-                  theme === 'dark' ? 'bg-white' : 'bg-zinc-400'
-                }`}></div>
-              </div>
             </div>
           </div>
         </div>

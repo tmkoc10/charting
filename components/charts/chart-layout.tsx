@@ -49,6 +49,7 @@ export function ChartLayout() {
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
   const [activeRightDrawerTab, setActiveRightDrawerTab] = useState("");
   const [isDrawerResizing, setIsDrawerResizing] = useState(false);
+  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [currentSymbol, setCurrentSymbol] = useState("NIFTY");
   const [currentTimeframe, setCurrentTimeframe] = useState("1H");
   const [currentChartType, setCurrentChartType] = useState<ChartType>("candlestick");
@@ -148,9 +149,17 @@ export function ChartLayout() {
 
   const handleFooterTabClick = (tabId: string) => {
     setActiveDrawerTab(tabId);
-    setIsDrawerOpen(true);
-    // Reset to default height when opening via footer tabs
-    setDrawerHeight(50);
+
+    // Only reset to default height when opening a closed drawer
+    // Preserve current height when switching between tabs of an already-open drawer
+    if (!isDrawerOpen) {
+      setIsDrawerOpen(true);
+      setDrawerHeight(50);
+    }
+    // If drawer is already open, just switch tabs without changing height
+    else {
+      // Drawer stays open with current height preserved
+    }
   };
 
   const handleDrawerClose = () => {
@@ -206,10 +215,15 @@ export function ChartLayout() {
 
   const handleDrawerResizeStart = useCallback(() => {
     setIsDrawerResizing(true);
+    setIsAnimationPaused(true);
   }, []);
 
   const handleDrawerResizeEnd = useCallback(() => {
     setIsDrawerResizing(false);
+    // Use a small delay to allow final position to settle before re-enabling animations
+    setTimeout(() => {
+      setIsAnimationPaused(false);
+    }, 50);
   }, []);
 
   const handleIndicatorAdd = useCallback((indicator: IndicatorType) => {
@@ -313,13 +327,17 @@ export function ChartLayout() {
       // Set the code editor content and open the drawer
       setCodeEditorContent(sourceCode);
       setActiveDrawerTab("code-editor");
-      setIsDrawerOpen(true);
-      // Reset to default height when opening programmatically
-      setDrawerHeight(50);
+
+      // Only reset to default height when opening a closed drawer
+      // Preserve current height when switching to code editor on an already-open drawer
+      if (!isDrawerOpen) {
+        setIsDrawerOpen(true);
+        setDrawerHeight(50);
+      }
 
       console.log("Opening code editor for indicator:", baseIndicatorId);
     }
-  }, [appliedIndicators]);
+  }, [appliedIndicators, isDrawerOpen]);
 
   // Handler for opening code editor from indicators popup (header)
   const handleHeaderIndicatorOpenCodeEditor = useCallback((indicatorId: string) => {
@@ -329,12 +347,16 @@ export function ChartLayout() {
     // Set the code editor content and open the drawer
     setCodeEditorContent(sourceCode);
     setActiveDrawerTab("code-editor");
-    setIsDrawerOpen(true);
-    // Reset to default height when opening programmatically
-    setDrawerHeight(50);
+
+    // Only reset to default height when opening a closed drawer
+    // Preserve current height when switching to code editor on an already-open drawer
+    if (!isDrawerOpen) {
+      setIsDrawerOpen(true);
+      setDrawerHeight(50);
+    }
 
     console.log("Opening code editor for indicator from header:", indicatorId);
-  }, []);
+  }, [isDrawerOpen]);
 
   const chartHeight = isDrawerOpen ? 100 - drawerHeight : 100;
 
@@ -353,11 +375,16 @@ export function ChartLayout() {
         `}</style>
       )}
 
-      <div className={`${isFullscreen ? 'fixed inset-0 w-screen h-screen' : 'h-screen'} flex flex-col overflow-hidden ${isFullscreen ? 'gap-0' : 'gap-1'} ${
-        theme === 'dark'
-          ? 'bg-zinc-900 text-white'
-          : 'bg-zinc-100 text-black'
-      } ${isFullscreen ? 'z-[9999]' : ''}`}>
+      <div
+        className={`${isFullscreen ? 'fixed inset-0 w-screen h-screen' : 'h-screen'} flex flex-col overflow-hidden ${isFullscreen ? 'gap-0' : 'gap-1'} ${
+          theme === 'dark'
+            ? 'bg-zinc-900 text-white'
+            : 'bg-zinc-100 text-black'
+        } ${isFullscreen ? 'z-[9999]' : ''}`}
+        style={{
+          willChange: isDrawerResizing || isRightDrawerOpen ? 'transform' : 'auto'
+        }}
+      >
       {/* Header - Full width at top, 38px height like TradingView */}
       {!isFullscreen && (
         <div className="h-[38px] flex-shrink-0 p-1">
@@ -390,8 +417,11 @@ export function ChartLayout() {
         <motion.div
           className="flex flex-col min-w-0 flex-1"
           transition={{
-            duration: 0.35,
+            duration: isAnimationPaused ? 0 : 0.2,
             ease: [0.25, 0.1, 0.25, 1.0]
+          }}
+          style={{
+            willChange: isRightDrawerOpen ? 'width, transform' : 'auto'
           }}
         >
           {isFullscreen ? (
@@ -430,12 +460,13 @@ export function ChartLayout() {
             <>
               <div
                 className={`flex flex-col min-h-0 p-1 ${
-                  isDrawerResizing
-                    ? ''
-                    : 'transition-all duration-300 ease-out'
+                  isDrawerResizing || isAnimationPaused
+                    ? 'will-change-transform'
+                    : 'transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]'
                 }`}
                 style={{
-                  height: `${chartHeight}%`
+                  height: `${chartHeight}%`,
+                  willChange: isDrawerResizing ? 'height, transform' : 'auto'
                 }}
               >
                 {/* Chart Area - takes most space */}
@@ -474,6 +505,7 @@ export function ChartLayout() {
                     activeTab={activeDrawerTab}
                     isDrawerOpen={isDrawerOpen}
                     onClose={handleDrawerClose}
+                    isAnimationPaused={isAnimationPaused}
                   />
                 </div>
               </div>
@@ -482,11 +514,14 @@ export function ChartLayout() {
               {isDrawerOpen && (
                 <div
                   className={`${
-                    isDrawerResizing
-                      ? ''
-                      : 'transition-all duration-300 ease-out'
+                    isDrawerResizing || isAnimationPaused
+                      ? 'will-change-transform'
+                      : 'transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]'
                   }`}
-                  style={{ height: `${drawerHeight}%` }}
+                  style={{
+                    height: `${drawerHeight}%`,
+                    willChange: isDrawerResizing ? 'height, transform' : 'auto'
+                  }}
                 >
                   <ChartDrawer
                     isOpen={isDrawerOpen}
@@ -495,6 +530,7 @@ export function ChartLayout() {
                     onTabChange={handleDrawerTabChange}
                     currentHeight={drawerHeight}
                     codeEditorContent={codeEditorContent}
+                    isAnimationPaused={isAnimationPaused}
                   />
                 </div>
               )}
@@ -512,10 +548,13 @@ export function ChartLayout() {
                 animate={{ width: "20%", opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
                 transition={{
-                  duration: 0.35,
+                  duration: isAnimationPaused ? 0 : 0.2,
                   ease: [0.25, 0.1, 0.25, 1.0]
                 }}
                 className="flex-shrink-0 overflow-hidden p-1 pl-0"
+                style={{
+                  willChange: 'width, transform, opacity'
+                }}
               >
                 <div className={`w-full h-full rounded flex flex-col ${
                   theme === 'dark'
@@ -526,6 +565,7 @@ export function ChartLayout() {
                     isOpen={isRightDrawerOpen}
                     onClose={handleRightDrawerClose}
                     activeTab={activeRightDrawerTab}
+                    isAnimationPaused={isAnimationPaused}
                   />
                 </div>
               </motion.div>

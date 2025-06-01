@@ -41,10 +41,8 @@ export function DrawerResizeHandle({
     const constrainedHeight = Math.max(0, Math.min(92, newHeight));
     targetHeight.current = constrainedHeight;
 
-    // Use requestAnimationFrame to ensure smooth updates and proper state synchronization
-    requestAnimationFrame(() => {
-      onResize(constrainedHeight);
-    });
+    // Call onResize directly for immediate updates during dragging
+    onResize(constrainedHeight);
   }, [onResize]);
 
   const handleMouseUp = useCallback(() => {
@@ -74,10 +72,8 @@ export function DrawerResizeHandle({
     const constrainedHeight = Math.max(0, Math.min(92, newHeight));
     targetHeight.current = constrainedHeight;
 
-    // Use requestAnimationFrame to ensure smooth updates and proper state synchronization
-    requestAnimationFrame(() => {
-      onResize(constrainedHeight);
-    });
+    // Call onResize directly for immediate updates during dragging
+    onResize(constrainedHeight);
   }, [onResize]);
 
   const handleTouchEnd = useCallback(() => {

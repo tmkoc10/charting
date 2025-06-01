@@ -14,9 +14,10 @@ interface ChartDrawerProps {
   onTabChange: (tab: string) => void;
   currentHeight: number;
   codeEditorContent?: string;
+  isAnimationPaused?: boolean;
 }
 
-export function ChartDrawer({ activeTab, codeEditorContent }: ChartDrawerProps) {
+export function ChartDrawer({ activeTab, codeEditorContent, isAnimationPaused = false }: ChartDrawerProps) {
   const { theme } = useTheme();
   const drawerRef = useRef<HTMLDivElement>(null);
   const [algoScript, setAlgoScript] = useState("");
@@ -360,8 +361,14 @@ export function ChartDrawer({ activeTab, codeEditorContent }: ChartDrawerProps) 
           key={activeTab}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{
+            duration: isAnimationPaused ? 0 : 0.15,
+            ease: [0.25, 0.1, 0.25, 1.0]
+          }}
           className="h-full"
+          style={{
+            willChange: isAnimationPaused ? 'auto' : 'transform, opacity'
+          }}
         >
           {renderContent()}
         </motion.div>

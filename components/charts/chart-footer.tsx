@@ -8,9 +8,10 @@ interface ChartFooterProps {
   activeTab: string;
   isDrawerOpen: boolean;
   onClose: () => void;
+  isAnimationPaused?: boolean;
 }
 
-export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: ChartFooterProps) {
+export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose, isAnimationPaused = false }: ChartFooterProps) {
   const { theme } = useTheme();
 
   return (
@@ -38,8 +39,8 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   : 'text-black hover:bg-zinc-200'
                 )
           }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={isAnimationPaused ? {} : { scale: 1.05 }}
+          whileTap={isAnimationPaused ? {} : { scale: 0.95 }}
         >
           {/* Active Tab Background */}
           {isDrawerOpen && activeTab === "brokers" && (
@@ -50,7 +51,14 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
                   : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
               }`}
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              transition={
+                isAnimationPaused
+                  ? { duration: 0 }
+                  : { type: "tween", duration: 0.15, ease: [0.25, 0.1, 0.25, 1.0] }
+              }
+              style={{
+                willChange: isAnimationPaused ? 'auto' : 'transform'
+              }}
             />
           )}
 
@@ -103,8 +111,8 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   : 'text-black hover:bg-zinc-200'
                 )
           }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={isAnimationPaused ? {} : { scale: 1.05 }}
+          whileTap={isAnimationPaused ? {} : { scale: 0.95 }}
         >
           {/* Active Tab Background */}
           {isDrawerOpen && activeTab === "code-editor" && (
@@ -115,7 +123,14 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
                   : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
               }`}
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              transition={
+                isAnimationPaused
+                  ? { duration: 0 }
+                  : { type: "tween", duration: 0.15, ease: [0.25, 0.1, 0.25, 1.0] }
+              }
+              style={{
+                willChange: isAnimationPaused ? 'auto' : 'transform'
+              }}
             />
           )}
 
@@ -167,8 +182,8 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   : 'text-black hover:bg-zinc-200'
                 )
           }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={isAnimationPaused ? {} : { scale: 1.05 }}
+          whileTap={isAnimationPaused ? {} : { scale: 0.95 }}
         >
           {/* Active Tab Background */}
           {isDrawerOpen && activeTab === "strategy-tester" && (
@@ -179,7 +194,14 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
                   : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
               }`}
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              transition={
+                isAnimationPaused
+                  ? { duration: 0 }
+                  : { type: "tween", duration: 0.15, ease: [0.25, 0.1, 0.25, 1.0] }
+              }
+              style={{
+                willChange: isAnimationPaused ? 'auto' : 'transform'
+              }}
             />
           )}
 
@@ -231,8 +253,8 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   : 'text-black hover:bg-zinc-200'
                 )
           }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={isAnimationPaused ? {} : { scale: 1.05 }}
+          whileTap={isAnimationPaused ? {} : { scale: 0.95 }}
         >
           {/* Active Tab Background */}
           {isDrawerOpen && activeTab === "hft-panel" && (
@@ -243,7 +265,14 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
                   : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
               }`}
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              transition={
+                isAnimationPaused
+                  ? { duration: 0 }
+                  : { type: "tween", duration: 0.15, ease: [0.25, 0.1, 0.25, 1.0] }
+              }
+              style={{
+                willChange: isAnimationPaused ? 'auto' : 'transform'
+              }}
             />
           )}
 
@@ -294,8 +323,8 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   : 'text-black hover:bg-zinc-200'
                 )
           }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={isAnimationPaused ? {} : { scale: 1.05 }}
+          whileTap={isAnimationPaused ? {} : { scale: 0.95 }}
         >
           {/* Active Tab Background */}
           {isDrawerOpen && activeTab === "stocks-screener" && (
@@ -306,7 +335,14 @@ export function ChartFooter({ onTabClick, activeTab, isDrawerOpen, onClose }: Ch
                   ? 'bg-gradient-to-r from-zinc-700 to-zinc-600'
                   : 'bg-gradient-to-r from-zinc-300 to-zinc-400'
               }`}
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              transition={
+                isAnimationPaused
+                  ? { duration: 0 }
+                  : { type: "tween", duration: 0.15, ease: [0.25, 0.1, 0.25, 1.0] }
+              }
+              style={{
+                willChange: isAnimationPaused ? 'auto' : 'transform'
+              }}
             />
           )}
 
