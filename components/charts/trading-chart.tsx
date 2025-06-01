@@ -3,25 +3,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef } from "react";
-import { createChart, ColorType, CandlestickSeries, LineSeries, IChartApi, ISeriesApi } from "lightweight-charts";
+import { createChart, ColorType, CandlestickSeries, LineSeries, AreaSeries, BarSeries, BaselineSeries, HistogramSeries, IChartApi, ISeriesApi } from "lightweight-charts";
 import { useChartDataQuery } from "@/lib/query-client";
 import { AppliedIndicator } from "./indicator-legend";
 import { calculateIndicator } from "@/lib/indicators";
 import { PerformanceWrapper } from "@/lib/performance";
 import { useTheme } from "@/lib/theme-context";
+import { ChartType } from "./chart-header";
 
 interface TradingChartProps {
   isCrosshairMode: boolean;
   symbol?: string;
   timeframe?: string;
+  chartType?: ChartType;
   appliedIndicators?: AppliedIndicator[];
 }
 
-export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1H", appliedIndicators = [] }: TradingChartProps) {
+export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1H", chartType = "candlestick", appliedIndicators = [] }: TradingChartProps) {
   const { theme } = useTheme();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const seriesRef = useRef<ISeriesApi<any> | null>(null);
   const indicatorSeriesRef = useRef<Map<string, ISeriesApi<"Line">>>(new Map());
 
   // Use React Query for cached chart data
@@ -126,30 +128,109 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
     // Run watermark hiding
     hideWatermarks();
 
-    // Add candlestick series using the correct v5 API
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#22c55e',
-      downColor: '#ef4444',
-      borderDownColor: '#ef4444',
-      borderUpColor: '#22c55e',
-      wickDownColor: '#ef4444',
-      wickUpColor: '#22c55e',
-    });
+    // Create series based on chart type
+    let mainSeries: ISeriesApi<any>;
 
-    seriesRef.current = candlestickSeries;
+    switch (chartType) {
+      case 'candlestick':
+        mainSeries = chart.addSeries(CandlestickSeries, {
+          upColor: '#22c55e',
+          downColor: '#ef4444',
+          borderDownColor: '#ef4444',
+          borderUpColor: '#22c55e',
+          wickDownColor: '#ef4444',
+          wickUpColor: '#22c55e',
+        });
+        break;
+      case 'line':
+        mainSeries = chart.addSeries(LineSeries, {
+          color: '#2962FF',
+          lineWidth: 2,
+        });
+        break;
+      case 'area':
+        mainSeries = chart.addSeries(AreaSeries, {
+          lineColor: '#2962FF',
+          topColor: 'rgba(41, 98, 255, 0.4)',
+          bottomColor: 'rgba(41, 98, 255, 0.1)',
+        });
+        break;
+      case 'bar':
+        mainSeries = chart.addSeries(BarSeries, {
+          upColor: '#22c55e',
+          downColor: '#ef4444',
+        });
+        break;
+      case 'baseline':
+        mainSeries = chart.addSeries(BaselineSeries, {
+          baseValue: { type: 'price', price: 0 },
+          topLineColor: '#22c55e',
+          topFillColor1: 'rgba(34, 197, 94, 0.4)',
+          topFillColor2: 'rgba(34, 197, 94, 0.1)',
+          bottomLineColor: '#ef4444',
+          bottomFillColor1: 'rgba(239, 68, 68, 0.1)',
+          bottomFillColor2: 'rgba(239, 68, 68, 0.4)',
+        });
+        break;
+      case 'histogram':
+        mainSeries = chart.addSeries(HistogramSeries, {
+          color: '#2962FF',
+        });
+        break;
+      default:
+        mainSeries = chart.addSeries(CandlestickSeries, {
+          upColor: '#22c55e',
+          downColor: '#ef4444',
+          borderDownColor: '#ef4444',
+          borderUpColor: '#22c55e',
+          wickDownColor: '#ef4444',
+          wickUpColor: '#22c55e',
+        });
+    }
+
+    seriesRef.current = mainSeries;
 
     // Load chart data from React Query cache or fetch if needed
     if (chartData && chartData.length > 0) {
-      // Convert our data format to LightweightCharts format
-      const sampleData = chartData.map(candle => ({
-        time: Math.floor(candle.time / 1000) as any, // Convert to seconds for LightweightCharts
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      }));
+      // Convert our data format to LightweightCharts format based on chart type
+      let formattedData: any[];
 
-      candlestickSeries.setData(sampleData);
+      switch (chartType) {
+        case 'candlestick':
+        case 'bar':
+          formattedData = chartData.map(candle => ({
+            time: Math.floor(candle.time / 1000) as any,
+            open: candle.open,
+            high: candle.high,
+            low: candle.low,
+            close: candle.close,
+          }));
+          break;
+        case 'line':
+        case 'area':
+        case 'baseline':
+          formattedData = chartData.map(candle => ({
+            time: Math.floor(candle.time / 1000) as any,
+            value: candle.close, // Use close price for single-value series
+          }));
+          break;
+        case 'histogram':
+          formattedData = chartData.map(candle => ({
+            time: Math.floor(candle.time / 1000) as any,
+            value: candle.volume, // Use volume for histogram
+          }));
+          break;
+        default:
+          formattedData = chartData.map(candle => ({
+            time: Math.floor(candle.time / 1000) as any,
+            open: candle.open,
+            high: candle.high,
+            low: candle.low,
+            close: candle.close,
+          }));
+      }
+
+      mainSeries.setData(formattedData);
     }
 
     // Hide TradingView watermark/logo
@@ -225,7 +306,7 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
         chartRef.current = null;
       }
     };
-  }, [symbol, timeframe, chartData, theme]);
+  }, [symbol, timeframe, chartType, chartData, theme]);
 
   // Update crosshair visibility when mode changes
   useEffect(() => {
@@ -252,23 +333,54 @@ export function TradingChart({ isCrosshairMode, symbol = "NIFTY", timeframe = "1
     }
   }, [isCrosshairMode]);
 
-  // Update chart data when symbol or timeframe changes
+  // Update chart data when symbol, timeframe, or chart type changes
   useEffect(() => {
     if (seriesRef.current && chartData && chartData.length > 0) {
       try {
-        const newData = chartData.map(candle => ({
-          time: Math.floor(candle.time / 1000) as any,
-          open: candle.open,
-          high: candle.high,
-          low: candle.low,
-          close: candle.close,
-        }));
+        // Convert data based on chart type
+        let newData: any[];
+
+        switch (chartType) {
+          case 'candlestick':
+          case 'bar':
+            newData = chartData.map(candle => ({
+              time: Math.floor(candle.time / 1000) as any,
+              open: candle.open,
+              high: candle.high,
+              low: candle.low,
+              close: candle.close,
+            }));
+            break;
+          case 'line':
+          case 'area':
+          case 'baseline':
+            newData = chartData.map(candle => ({
+              time: Math.floor(candle.time / 1000) as any,
+              value: candle.close,
+            }));
+            break;
+          case 'histogram':
+            newData = chartData.map(candle => ({
+              time: Math.floor(candle.time / 1000) as any,
+              value: candle.volume,
+            }));
+            break;
+          default:
+            newData = chartData.map(candle => ({
+              time: Math.floor(candle.time / 1000) as any,
+              open: candle.open,
+              high: candle.high,
+              low: candle.low,
+              close: candle.close,
+            }));
+        }
+
         seriesRef.current.setData(newData);
       } catch (error) {
         console.error('Error updating chart data:', error);
       }
     }
-  }, [symbol, timeframe, chartData]);
+  }, [symbol, timeframe, chartType, chartData]);
 
   // Update indicators when appliedIndicators changes
   useEffect(() => {

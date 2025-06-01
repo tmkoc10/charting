@@ -59,7 +59,7 @@ const FloatingDockMobile = ({
                   key={item.title}
                   className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center"
                 >
-                  <div className="h-4 w-4">{item.icon}</div>
+                  <div className="h-6 w-6">{item.icon}</div>
                 </Link>
               </motion.div>
             ))}
@@ -80,7 +80,7 @@ const FloatingDockMobile = ({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-5 w-5 text-neutral-500 dark:text-neutral-400"
+          className="h-6 w-6 text-neutral-500 dark:text-neutral-400"
         >
           <path d="M3 12h18m-9-9v18" />
         </svg>

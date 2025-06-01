@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import { ProfileDropdown } from "./profile-dropdown";
 import { createClient } from "@/lib/client";
 import { useTheme } from "@/lib/theme-context";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { getIndicatorSourceCode } from "./indicator-legend";
 
 // Define symbol search types
 type SymbolData = {
@@ -145,6 +147,176 @@ const TIMEFRAMES = {
     { value: "3M", label: "3 months" },
   ],
 };
+
+// Chart type data structure
+export type ChartType = 'candlestick' | 'line' | 'area' | 'bar' | 'baseline' | 'histogram';
+
+const CHART_TYPES = [
+  { label: "Candlesticks", value: "candlestick" as ChartType },
+  { label: "Line Chart", value: "line" as ChartType },
+  { label: "Area Chart", value: "area" as ChartType },
+  { label: "Bar Chart", value: "bar" as ChartType },
+  { label: "Baseline Chart", value: "baseline" as ChartType },
+  { label: "Histogram", value: "histogram" as ChartType },
+];
+
+// Chart Type Icon Component
+function ChartTypeIcon({ type, className = "", size = "default" }: { type: ChartType; className?: string; size?: "default" | "header" }) {
+  const { theme } = useTheme();
+  const iconColor = theme === 'dark' ? '#a1a1aa' : '#71717a';
+
+  // Use standardized 24x24 size for header to match other header icons
+  const iconSize = size === "header" ? "24" : "16";
+  const strokeWidth = size === "header" ? "1.5" : "1";
+
+  switch (type) {
+    case 'candlestick':
+      return (
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          className={className}
+        >
+          {/* First candlestick - bullish (larger) */}
+          <rect x="5" y="7" width="4" height="8" fill={iconColor} />
+          <line x1="7" y1="4" x2="7" y2="7" stroke={iconColor} strokeWidth={strokeWidth} />
+          <line x1="7" y1="15" x2="7" y2="20" stroke={iconColor} strokeWidth={strokeWidth} />
+
+          {/* Second candlestick - bearish (smaller) */}
+          <rect x="15" y="9" width="4" height="6" fill={iconColor} />
+          <line x1="17" y1="6" x2="17" y2="9" stroke={iconColor} strokeWidth={strokeWidth} />
+          <line x1="17" y1="15" x2="17" y2="18" stroke={iconColor} strokeWidth={strokeWidth} />
+        </svg>
+      );
+    case 'line':
+      return (
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={iconColor}
+          strokeWidth={size === "header" ? "2.5" : "2"}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <polyline points="3,17 9,11 13,15 21,7" />
+        </svg>
+      );
+    case 'area':
+      return (
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          className={className}
+        >
+          <path
+            d="M3 17L9 11L13 15L21 7V21H3V17Z"
+            fill={iconColor}
+            fillOpacity="0.3"
+          />
+          <polyline
+            points="3,17 9,11 13,15 21,7"
+            stroke={iconColor}
+            strokeWidth={size === "header" ? "2.5" : "2"}
+            fill="none"
+          />
+        </svg>
+      );
+    case 'bar':
+      return (
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          className={className}
+        >
+          {/* Bar chart representation */}
+          <line x1="6" y1="8" x2="6" y2="16" stroke={iconColor} strokeWidth={size === "header" ? "2.5" : "2"} />
+          <line x1="5" y1="8" x2="7" y2="8" stroke={iconColor} strokeWidth={strokeWidth} />
+          <line x1="5" y1="16" x2="7" y2="16" stroke={iconColor} strokeWidth={strokeWidth} />
+
+          <line x1="12" y1="6" x2="12" y2="18" stroke={iconColor} strokeWidth={size === "header" ? "2.5" : "2"} />
+          <line x1="11" y1="6" x2="13" y2="6" stroke={iconColor} strokeWidth={strokeWidth} />
+          <line x1="11" y1="18" x2="13" y2="18" stroke={iconColor} strokeWidth={strokeWidth} />
+
+          <line x1="18" y1="10" x2="18" y2="14" stroke={iconColor} strokeWidth={size === "header" ? "2.5" : "2"} />
+          <line x1="17" y1="10" x2="19" y2="10" stroke={iconColor} strokeWidth={strokeWidth} />
+          <line x1="17" y1="14" x2="19" y2="14" stroke={iconColor} strokeWidth={strokeWidth} />
+        </svg>
+      );
+    case 'baseline':
+      return (
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          className={className}
+        >
+          <line x1="3" y1="12" x2="21" y2="12" stroke={iconColor} strokeWidth={strokeWidth} strokeDasharray="2,2" />
+          <path
+            d="M3 12L9 8L13 10L21 6V12H3Z"
+            fill={iconColor}
+            fillOpacity="0.2"
+          />
+          <path
+            d="M3 12L9 16L13 14L21 18V12H3Z"
+            fill={iconColor}
+            fillOpacity="0.1"
+          />
+          <polyline
+            points="3,12 9,8 13,10 21,6"
+            stroke={iconColor}
+            strokeWidth={size === "header" ? "2.5" : "2"}
+            fill="none"
+          />
+        </svg>
+      );
+    case 'histogram':
+      return (
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          className={className}
+        >
+          <rect x="4" y="12" width="2" height="8" fill={iconColor} />
+          <rect x="8" y="8" width="2" height="12" fill={iconColor} />
+          <rect x="12" y="14" width="2" height="6" fill={iconColor} />
+          <rect x="16" y="10" width="2" height="10" fill={iconColor} />
+          <rect x="20" y="16" width="2" height="4" fill={iconColor} />
+        </svg>
+      );
+    default:
+      return (
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          className={className}
+        >
+          {/* First candlestick - bullish (larger) */}
+          <rect x="5" y="7" width="4" height="8" fill={iconColor} />
+          <line x1="7" y1="4" x2="7" y2="7" stroke={iconColor} strokeWidth={strokeWidth} />
+          <line x1="7" y1="15" x2="7" y2="20" stroke={iconColor} strokeWidth={strokeWidth} />
+
+          {/* Second candlestick - bearish (smaller) */}
+          <rect x="15" y="9" width="4" height="6" fill={iconColor} />
+          <line x1="17" y1="6" x2="17" y2="9" stroke={iconColor} strokeWidth={strokeWidth} />
+          <line x1="17" y1="15" x2="17" y2="18" stroke={iconColor} strokeWidth={strokeWidth} />
+        </svg>
+      );
+  }
+}
 
 // Indicators data structure
 type IndicatorType = {
@@ -426,10 +598,12 @@ function IndicatorsSelector({
   isOpen,
   onClose,
   onSelect,
+  onOpenCodeEditor,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (indicator: IndicatorType) => void;
+  onOpenCodeEditor?: (indicatorId: string) => void;
 }) {
   const { theme } = useTheme();
   const popupRef = useRef<HTMLDivElement>(null);
@@ -438,6 +612,7 @@ function IndicatorsSelector({
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredIndicators, setFilteredIndicators] = useState<IndicatorType[]>(INDICATORS.Basic);
   const [isAnimating, setIsAnimating] = useState(false);
+
 
   // Filter indicators based on search term and category
   useEffect(() => {
@@ -507,276 +682,279 @@ function IndicatorsSelector({
   if (!isOpen) return null;
 
   // Portal to render at the body level to avoid z-index issues
-  return createPortal(
-    <div className={`fixed inset-0 z-50 flex items-start justify-center pt-20 transition-all duration-500 ease-out ${
-      isAnimating
-        ? (theme === 'dark'
-            ? 'bg-black bg-opacity-80 backdrop-blur-sm'
-            : 'bg-black bg-opacity-50 backdrop-blur-sm')
-        : 'bg-opacity-0'
-    }`}>
-      <div
-        ref={popupRef}
-        className={`border-2 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
-          theme === 'dark'
-            ? 'bg-black border-gray-700'
-            : 'bg-white border-gray-300'
-        } ${
+  return (
+    <>
+      {createPortal(
+        <div className={`fixed inset-0 z-50 flex items-start justify-center pt-20 transition-all duration-500 ease-out ${
           isAnimating
-            ? 'translate-y-0 opacity-100 scale-100'
-            : 'translate-y-8 opacity-0 scale-95'
-        }`}
-        style={{
-          height: '580px', // Increased from 460px to 580px (120px more from bottom)
-          boxShadow: theme === 'dark'
-            ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
-            : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
-        }}
-      >
-      {/* Header */}
-      <div className={`flex items-center justify-between px-4 py-3 border-b border-opacity-50 ${
-        theme === 'dark'
-          ? 'border-gray-700'
-          : 'border-gray-300'
-      }`}>
-        <h2 className={`text-lg font-semibold ${
-          theme === 'dark' ? 'text-white' : 'text-black'
-        }`}>Indicators</h2>
-        <button
-          onClick={onClose}
-          className={`transition-all duration-300 p-2 rounded-lg hover:scale-110 active:scale-95 ${
-            theme === 'dark'
-              ? 'text-gray-400 hover:text-white hover:bg-gray-800'
-              : 'text-gray-600 hover:text-black hover:bg-gray-200'
-          }`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      {/* Main Content Area with Sidebar */}
-      <div className="flex flex-1" style={{ height: '500px' }}> {/* Increased from 380px to 500px */}
-        {/* Left Sidebar - Categories */}
-        <div className={`w-48 border-r border-opacity-50 ${
-          theme === 'dark'
-            ? 'border-gray-700 bg-gray-900 bg-opacity-30'
-            : 'border-gray-300 bg-gray-100 bg-opacity-50'
+            ? (theme === 'dark'
+                ? 'bg-black bg-opacity-80 backdrop-blur-sm'
+                : 'bg-black bg-opacity-50 backdrop-blur-sm')
+            : 'bg-opacity-0'
         }`}>
-          <div className={`p-3 border-b border-opacity-30 ${
+          <div
+            ref={popupRef}
+            className={`border-2 rounded-xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden transform transition-all duration-500 ease-out ${
+              theme === 'dark'
+                ? 'bg-black border-gray-700'
+                : 'bg-white border-gray-300'
+            } ${
+              isAnimating
+                ? 'translate-y-0 opacity-100 scale-100'
+                : 'translate-y-8 opacity-0 scale-95'
+            }`}
+            style={{
+              height: '580px', // Increased from 460px to 580px (120px more from bottom)
+              boxShadow: theme === 'dark'
+                ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+                : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
+            }}
+          >
+          {/* Header */}
+          <div className={`flex items-center justify-between px-4 py-3 border-b border-opacity-50 ${
             theme === 'dark'
               ? 'border-gray-700'
               : 'border-gray-300'
           }`}>
-            <h3 className={`text-sm font-medium uppercase tracking-wide ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-            }`}>Categories</h3>
-          </div>
-          <div className="py-2">
-            {Object.keys(INDICATORS).map((category, index) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-300 transform hover:translate-x-1 group ${
-                  selectedCategory === category
-                    ? (theme === 'dark'
-                        ? "bg-gray-700 text-white shadow-lg border-r-2 border-r-gray-500"
-                        : "bg-gray-300 text-black shadow-lg border-r-2 border-r-gray-600")
-                    : (theme === 'dark'
-                        ? "text-gray-400 hover:text-white hover:bg-gray-800 hover:bg-opacity-50"
-                        : "text-gray-600 hover:text-black hover:bg-gray-200 hover:bg-opacity-70")
-                }`}
-                style={{
-                  animationDelay: `${index * 100}ms`
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <span className={`transition-all duration-300 ${
-                    theme === 'dark' ? 'group-hover:text-gray-100' : 'group-hover:text-gray-800'
-                  }`}>{category}</span>
-                  <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    selectedCategory === category
-                      ? (theme === 'dark' ? "bg-gray-400" : "bg-gray-600")
-                      : (theme === 'dark'
-                          ? "bg-gray-600 group-hover:bg-gray-500"
-                          : "bg-gray-400 group-hover:bg-gray-500")
-                  }`}></div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Content Area - Indicators List */}
-        <div className="flex-1 flex flex-col">
-          {/* Search Input */}
-          <div className={`px-4 py-3 border-b border-opacity-30 ${
-            theme === 'dark'
-              ? 'border-gray-700'
-              : 'border-gray-300'
-          }`}>
-            <div className="relative group">
-              <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+            <h2 className={`text-lg font-semibold ${
+              theme === 'dark' ? 'text-white' : 'text-black'
+            }`}>Indicators</h2>
+            <button
+              onClick={onClose}
+              className={`transition-all duration-300 p-2 rounded-lg hover:scale-110 active:scale-95 ${
                 theme === 'dark'
-                  ? 'text-gray-500 group-focus-within:text-gray-300'
-                  : 'text-gray-400 group-focus-within:text-gray-600'
-              }`}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              </div>
-              <input
-                ref={inputRef}
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search indicators..."
-                className={`w-full pl-9 pr-9 py-2.5 rounded-lg border border-opacity-40 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 text-sm ${
-                  theme === 'dark'
-                    ? 'bg-gray-900 bg-opacity-30 text-white border-gray-600 focus:ring-gray-500 focus:border-gray-500 focus:bg-gray-800 focus:bg-opacity-50 placeholder-gray-500 hover:border-gray-500'
-                    : 'bg-gray-100 bg-opacity-50 text-black border-gray-300 focus:ring-gray-400 focus:border-gray-400 focus:bg-gray-50 placeholder-gray-400 hover:border-gray-400'
-                }`}
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm("")}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 p-1 rounded-lg hover:scale-110 active:scale-95 ${
-                    theme === 'dark'
-                      ? 'text-gray-500 hover:text-white hover:bg-gray-700'
-                      : 'text-gray-400 hover:text-black hover:bg-gray-200'
-                  }`}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              )}
-            </div>
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-200'
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
 
-          {/* Indicators List */}
-          <div className="flex-1 overflow-y-auto scrollbar-black">
-            {filteredIndicators.length > 0 ? (
-              <div>
-                {filteredIndicators.map((indicator, index) => (
+          {/* Main Content Area with Sidebar */}
+          <div className="flex flex-1" style={{ height: '500px' }}> {/* Increased from 380px to 500px */}
+            {/* Left Sidebar - Categories */}
+            <div className={`w-48 border-r border-opacity-50 ${
+              theme === 'dark'
+                ? 'border-gray-700 bg-gray-900 bg-opacity-30'
+                : 'border-gray-300 bg-gray-100 bg-opacity-50'
+            }`}>
+              <div className={`p-3 border-b border-opacity-30 ${
+                theme === 'dark'
+                  ? 'border-gray-700'
+                  : 'border-gray-300'
+              }`}>
+                <h3 className={`text-sm font-medium uppercase tracking-wide ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>Categories</h3>
+              </div>
+              <div className="py-2">
+                {Object.keys(INDICATORS).map((category, index) => (
                   <button
-                    key={indicator.id}
-                    onClick={() => {
-                      onSelect(indicator);
-                      onClose();
-                    }}
-                    className={`w-full px-4 py-3 text-left cursor-pointer border-b border-opacity-20 last:border-b-0 transition-all duration-300 transform hover:translate-x-1 hover:shadow-lg group ${
-                      theme === 'dark'
-                        ? 'hover:bg-gray-800 hover:bg-opacity-50 border-gray-700'
-                        : 'hover:bg-gray-100 hover:bg-opacity-70 border-gray-300'
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-300 transform hover:translate-x-1 group ${
+                      selectedCategory === category
+                        ? (theme === 'dark'
+                            ? "bg-gray-700 text-white shadow-lg border-r-2 border-r-gray-500"
+                            : "bg-gray-300 text-black shadow-lg border-r-2 border-r-gray-600")
+                        : (theme === 'dark'
+                            ? "text-gray-400 hover:text-white hover:bg-gray-800 hover:bg-opacity-50"
+                            : "text-gray-600 hover:text-black hover:bg-gray-200 hover:bg-opacity-70")
                     }`}
                     style={{
-                      animationDelay: `${index * 30}ms`
+                      animationDelay: `${index * 100}ms`
                     }}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`font-medium text-sm transition-all duration-300 truncate ${
-                            theme === 'dark'
-                              ? 'text-white group-hover:text-gray-100'
-                              : 'text-black group-hover:text-gray-800'
-                          }`}>
-                            {searchTerm ? (
-                              <HighlightText text={indicator.name} highlight={searchTerm} />
-                            ) : (
-                              indicator.name
-                            )}
-                          </span>
-                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full transition-all duration-300 ${getCategoryBadgeStyle(indicator.category)}`}>
-                            {getCategoryDisplayName(indicator.category)}
-                          </span>
-                        </div>
-                        <p className={`text-xs transition-all duration-300 line-clamp-2 ${
-                          theme === 'dark'
-                            ? 'text-gray-400 group-hover:text-gray-300'
-                            : 'text-gray-600 group-hover:text-gray-700'
-                        }`}>
-                          {searchTerm ? (
-                            <HighlightText text={indicator.description} highlight={searchTerm} />
-                          ) : (
-                            indicator.description
-                          )}
-                        </p>
-                        {indicator.parameters && Object.keys(indicator.parameters).length > 0 && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <span className={`text-xs ${
-                              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-                            }`}>Default:</span>
-                            <span className={`text-xs font-mono ${
-                              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                            }`}>
-                              {Object.entries(indicator.parameters).map(([key, value]) => `${key}=${value}`).join(', ')}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2 ml-2">
-                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                          theme === 'dark'
-                            ? 'bg-gray-600 group-hover:bg-gray-500'
-                            : 'bg-gray-400 group-hover:bg-gray-500'
-                        }`}></div>
-                      </div>
+                    <div className="flex items-center justify-between">
+                      <span className={`transition-all duration-300 ${
+                        theme === 'dark' ? 'group-hover:text-gray-100' : 'group-hover:text-gray-800'
+                      }`}>{category}</span>
+                      <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        selectedCategory === category
+                          ? (theme === 'dark' ? "bg-gray-400" : "bg-gray-600")
+                          : (theme === 'dark'
+                              ? "bg-gray-600 group-hover:bg-gray-500"
+                              : "bg-gray-400 group-hover:bg-gray-500")
+                      }`}></div>
                     </div>
                   </button>
                 ))}
               </div>
-            ) : (
-              <div className={`p-8 text-center animate-pulse ${
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
+            </div>
+
+            {/* Right Content Area - Indicators List */}
+            <div className="flex-1 flex flex-col">
+              {/* Search Input */}
+              <div className={`px-4 py-3 border-b border-opacity-30 ${
+                theme === 'dark'
+                  ? 'border-gray-700'
+                  : 'border-gray-300'
               }`}>
-                <div className="text-lg mb-2 font-medium">No indicators found</div>
-                <div className="text-sm">Try adjusting your search or category filter</div>
+                <div className="relative group">
+                  <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+                    theme === 'dark'
+                      ? 'text-gray-500 group-focus-within:text-gray-300'
+                      : 'text-gray-400 group-focus-within:text-gray-600'
+                  }`}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </div>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search indicators..."
+                    className={`w-full pl-9 pr-9 py-2.5 rounded-lg border border-opacity-40 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 text-sm ${
+                      theme === 'dark'
+                        ? 'bg-gray-900 bg-opacity-30 text-white border-gray-600 focus:ring-gray-500 focus:border-gray-500 focus:bg-gray-800 focus:bg-opacity-50 placeholder-gray-500 hover:border-gray-500'
+                        : 'bg-gray-100 bg-opacity-50 text-black border-gray-300 focus:ring-gray-400 focus:border-gray-400 focus:bg-gray-50 placeholder-gray-400 hover:border-gray-400'
+                    }`}
+                  />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm("")}
+                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 p-1 rounded-lg hover:scale-110 active:scale-95 ${
+                        theme === 'dark'
+                          ? 'text-gray-500 hover:text-white hover:bg-gray-700'
+                          : 'text-gray-400 hover:text-black hover:bg-gray-200'
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
-            )}
+
+              {/* Indicators List */}
+              <div className="flex-1 overflow-y-auto scrollbar-black">
+                {filteredIndicators.length > 0 ? (
+                  <div>
+                    {filteredIndicators.map((indicator, index) => (
+                      <div
+                        key={indicator.id}
+                        onClick={() => {
+                          onSelect(indicator);
+                          onClose();
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onSelect(indicator);
+                            onClose();
+                          }
+                        }}
+                        className={`w-full px-4 py-3 text-left cursor-pointer border-b border-opacity-20 last:border-b-0 transition-all duration-300 transform hover:translate-x-1 hover:shadow-lg group ${
+                          theme === 'dark'
+                            ? 'hover:bg-gray-800 hover:bg-opacity-50 border-gray-700'
+                            : 'hover:bg-gray-100 hover:bg-opacity-70 border-gray-300'
+                        }`}
+                        style={{
+                          animationDelay: `${index * 30}ms`
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <span className={`font-medium text-sm transition-all duration-300 truncate ${
+                              theme === 'dark'
+                                ? 'text-white group-hover:text-gray-100'
+                                : 'text-black group-hover:text-gray-800'
+                            }`}>
+                              {searchTerm ? (
+                                <HighlightText text={indicator.name} highlight={searchTerm} />
+                              ) : (
+                                indicator.name
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2 ml-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Close the indicators popup panel
+                                onClose();
+                                // Open the algo script footer drawer with the indicator's source code
+                                if (onOpenCodeEditor) {
+                                  onOpenCodeEditor(indicator.id);
+                                }
+                              }}
+                              className={`text-xs font-mono transition-all duration-300 hover:scale-110 cursor-pointer ${
+                                theme === 'dark'
+                                  ? 'text-gray-600 hover:text-gray-400'
+                                  : 'text-gray-400 hover:text-gray-600'
+                              }`}
+                              title="View Source Code"
+                            >
+                              {"{ }"}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={`p-8 text-center animate-pulse ${
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
+                  }`}>
+                    <div className="text-lg mb-2 font-medium">No indicators found</div>
+                    <div className="text-sm">Try adjusting your search or category filter</div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      </div>
-    </div>,
-    document.body
+          </div>
+        </div>,
+        document.body
+      )}
+
+
+    </>
   );
 }
+
+
 
 // Timeframe Selector Component
 function TimeframeSelector({
@@ -860,7 +1038,7 @@ function TimeframeSelector({
   return createPortal(
     <div
       ref={popupRef}
-      className={`fixed border-2 rounded-xl shadow-2xl w-64 overflow-hidden transform transition-all duration-500 ease-out z-50 ${
+      className={`fixed border-2 rounded-xl shadow-2xl w-64 overflow-hidden transform transition-all duration-500 ease-out z-50 no-scrollbar ${
         theme === 'dark'
           ? 'bg-black border-gray-700'
           : 'bg-white border-gray-300'
@@ -872,7 +1050,8 @@ function TimeframeSelector({
       style={{
         top: position.top,
         left: position.left,
-        height: '400px',
+        height: 'auto',
+        maxHeight: '400px', // Keep max height but allow auto sizing
         boxShadow: theme === 'dark'
           ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
           : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
@@ -912,8 +1091,8 @@ function TimeframeSelector({
           </button>
         </div>
 
-        {/* Timeframe List */}
-        <div className="flex-1 overflow-y-auto scrollbar-black" style={{ height: '340px' }}>
+        {/* Timeframe List - Removed overflow and fixed height to prevent scrollbars */}
+        <div className="flex-1 no-scrollbar" style={{ maxHeight: '340px', overflowY: 'auto' }}>
           {Object.entries(TIMEFRAMES).map(([sectionKey, timeframes], sectionIndex) => (
             <div key={sectionKey}>
               {/* Section Header */}
@@ -986,6 +1165,174 @@ function TimeframeSelector({
                 </div>
               )}
             </div>
+          ))}
+        </div>
+    </div>,
+    document.body
+  );
+}
+
+// Chart Type Selector Component
+function ChartTypeSelector({
+  isOpen,
+  onClose,
+  onSelect,
+  currentChartType,
+  buttonRef,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSelect: (chartType: ChartType) => void;
+  currentChartType: ChartType;
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
+}) {
+  const { theme } = useTheme();
+  const popupRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Calculate position when opening
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      setIsAnimating(true);
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      setPosition({
+        top: buttonRect.bottom + 8, // 8px gap below the button
+        left: buttonRect.left,
+      });
+    } else {
+      setIsAnimating(false);
+    }
+  }, [isOpen, buttonRef]);
+
+  // Handle click outside to close popup
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node) &&
+          buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose, buttonRef]);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div
+      ref={popupRef}
+      className={`fixed border-2 rounded-xl shadow-2xl w-64 overflow-hidden transform transition-all duration-500 ease-out z-50 no-scrollbar ${
+        theme === 'dark'
+          ? 'bg-black border-gray-700'
+          : 'bg-white border-gray-300'
+      } ${
+        isAnimating
+          ? 'translate-y-0 opacity-100 scale-100'
+          : 'translate-y-2 opacity-0 scale-95'
+      }`}
+      style={{
+        top: position.top,
+        left: position.left,
+        height: 'auto', // Auto height to fit all content
+        maxHeight: 'none', // Remove max height restriction
+        boxShadow: theme === 'dark'
+          ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+          : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
+      }}
+    >
+        {/* Header */}
+        <div className={`flex items-center justify-between px-4 py-3 border-b border-opacity-50 ${
+          theme === 'dark'
+            ? 'border-gray-700'
+            : 'border-gray-300'
+        }`}>
+          <h2 className={`text-lg font-semibold ${
+            theme === 'dark' ? 'text-white' : 'text-black'
+          }`}>Chart Type</h2>
+          <button
+            onClick={onClose}
+            className={`transition-all duration-300 p-2 rounded-lg hover:scale-110 active:scale-95 ${
+              theme === 'dark'
+                ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                : 'text-gray-600 hover:text-black hover:bg-gray-200'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        {/* Chart Type List - Removed overflow and fixed height to prevent scrollbars */}
+        <div className="flex-1">
+          {CHART_TYPES.map((chartType, index) => (
+            <button
+              key={chartType.value}
+              onClick={() => {
+                onSelect(chartType.value);
+                onClose();
+              }}
+              className={`w-full px-4 py-3 text-left text-sm transition-all duration-300 border-b border-opacity-20 last:border-b-0 transform hover:translate-x-1 hover:shadow-lg group ${
+                theme === 'dark'
+                  ? 'border-gray-700'
+                  : 'border-gray-300'
+              } ${
+                currentChartType === chartType.value
+                  ? (theme === 'dark'
+                      ? "bg-gray-700 text-white font-medium shadow-lg border-l-2 border-l-gray-500"
+                      : "bg-gray-200 text-black font-medium shadow-lg border-l-2 border-l-gray-600")
+                  : (theme === 'dark'
+                      ? "text-gray-300 hover:bg-gray-800 hover:bg-opacity-70 hover:text-white"
+                      : "text-gray-700 hover:bg-gray-100 hover:bg-opacity-70 hover:text-black")
+              }`}
+              style={{
+                animationDelay: `${index * 50}ms`
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <ChartTypeIcon type={chartType.value} className="flex-shrink-0" />
+                <span className={`transition-all duration-300 ${
+                  theme === 'dark' ? 'group-hover:text-gray-100' : 'group-hover:text-gray-800'
+                }`}>
+                  {chartType.label}
+                </span>
+              </div>
+            </button>
           ))}
         </div>
     </div>,
@@ -1380,6 +1727,7 @@ function getSymbolIconStyle(category: string): string {
 }
 
 // Helper functions for indicator categories
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCategoryDisplayName(category: string): string {
   switch (category) {
     case 'trend':
@@ -1395,6 +1743,7 @@ function getCategoryDisplayName(category: string): string {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCategoryBadgeStyle(category: string): string {
   switch (category) {
     case 'trend':
@@ -1440,22 +1789,330 @@ function HighlightText({ text, highlight }: { text: string; highlight: string })
   );
 }
 
+// Export Panel Component
+interface ExportPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onExport: (format: string) => void;
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
+}
+
+function ExportPanel({ isOpen, onClose, onExport, buttonRef }: ExportPanelProps) {
+  const { theme } = useTheme();
+  const popupRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Calculate position when opening
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      setIsAnimating(true);
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      setPosition({
+        top: buttonRect.bottom + 8, // 8px gap below the button
+        left: buttonRect.right - 320, // Align right edge of panel with button (320px is panel width)
+      });
+    } else {
+      setIsAnimating(false);
+    }
+  }, [isOpen, buttonRef]);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isOpen, onClose]);
+
+  // Handle click outside to close
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Element;
+      const panel = popupRef.current;
+      const button = buttonRef.current;
+
+      if (panel && !panel.contains(target) && button && !button.contains(target)) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [isOpen, onClose, buttonRef]);
+
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div
+      ref={popupRef}
+      className={`fixed border-2 rounded-xl shadow-2xl w-80 overflow-hidden transform transition-all duration-500 ease-out z-50 no-scrollbar ${
+        theme === 'dark'
+          ? 'bg-black border-gray-700'
+          : 'bg-white border-gray-300'
+      } ${
+        isAnimating
+          ? 'translate-y-0 opacity-100 scale-100'
+          : 'translate-y-2 opacity-0 scale-95'
+      }`}
+      style={{
+        top: position.top,
+        left: position.left,
+        height: 'auto',
+        maxHeight: '400px',
+        boxShadow: theme === 'dark'
+          ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(75, 85, 99, 0.3)'
+          : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)'
+      }}
+    >
+      {/* Header */}
+      <div className={`flex items-center justify-between px-4 py-3 border-b border-opacity-50 ${
+        theme === 'dark'
+          ? 'border-gray-700'
+          : 'border-gray-300'
+      }`}>
+        <h2 className={`text-lg font-semibold ${
+          theme === 'dark' ? 'text-white' : 'text-black'
+        }`}>Export chart data</h2>
+        <button
+          onClick={onClose}
+          className={`transition-all duration-300 p-2 rounded-lg hover:scale-110 active:scale-95 ${
+            theme === 'dark'
+              ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+              : 'text-gray-600 hover:text-black hover:bg-gray-200'
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 space-y-4">
+        <p className={`text-sm ${theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'}`}>
+          All information from the selected chart, including the symbol & indicators will be saved to a CSV file.
+        </p>
+
+        <div className="space-y-3">
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'
+            }`}>
+              Chart
+            </label>
+            <select className={`w-full px-3 py-2 rounded border text-sm ${
+              theme === 'dark'
+                ? 'bg-zinc-800 border-zinc-700 text-white'
+                : 'bg-white border-zinc-300 text-black'
+            }`}>
+              <option>NSE:NIFTY, 1</option>
+            </select>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'
+            }`}>
+              Time format (UTC)
+            </label>
+            <select className={`w-full px-3 py-2 rounded border text-sm ${
+              theme === 'dark'
+                ? 'bg-zinc-800 border-zinc-700 text-white'
+                : 'bg-white border-zinc-300 text-black'
+            }`}>
+              <option>UNIX timestamp</option>
+              <option>ISO 8601</option>
+              <option>Human readable</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex justify-end gap-2 pt-2">
+          <button
+            onClick={onClose}
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+              theme === 'dark'
+                ? 'text-zinc-300 hover:text-white hover:bg-zinc-800'
+                : 'text-zinc-700 hover:text-black hover:bg-zinc-200'
+            }`}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onExport('csv')}
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+              theme === 'dark'
+                ? 'bg-white text-black hover:bg-zinc-200'
+                : 'bg-black text-white hover:bg-zinc-800'
+            }`}
+          >
+            Export
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 type ChartHeaderProps = {
   onSymbolChange?: (symbol: string) => void;
   onTimeframeChange?: (timeframe: string) => void;
+  onChartTypeChange?: (chartType: ChartType) => void;
   onIndicatorAdd?: (indicator: IndicatorType) => void;
+  onIndicatorOpenCodeEditor?: (indicatorId: string) => void;
   isCodeEditorActive?: boolean;
+  isFullscreen?: boolean;
+  onFullscreenToggle?: () => void;
 };
 
-export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd, isCodeEditorActive }: ChartHeaderProps) {
+export function ChartHeader({ onSymbolChange, onTimeframeChange, onChartTypeChange, onIndicatorAdd, onIndicatorOpenCodeEditor, isCodeEditorActive, isFullscreen, onFullscreenToggle }: ChartHeaderProps) {
   const { theme } = useTheme();
   const [currentSymbol, setCurrentSymbol] = useState<SymbolData>(DEFAULT_SYMBOL);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentTimeframe, setCurrentTimeframe] = useState("1m");
   const [isTimeframeOpen, setIsTimeframeOpen] = useState(false);
+  const [currentChartType, setCurrentChartType] = useState<ChartType>("candlestick");
+  const [isChartTypeOpen, setIsChartTypeOpen] = useState(false);
   const [isIndicatorsOpen, setIsIndicatorsOpen] = useState(false);
+  const [isCapturingScreenshot, setIsCapturingScreenshot] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const timeframeButtonRef = useRef<HTMLButtonElement>(null);
+  const chartTypeButtonRef = useRef<HTMLButtonElement>(null);
   const indicatorsButtonRef = useRef<HTMLButtonElement>(null);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Screenshot functionality
+  const handleScreenshot = useCallback(async () => {
+    if (isCapturingScreenshot) return; // Prevent multiple simultaneous captures
+
+    setIsCapturingScreenshot(true);
+
+    try {
+      // Method 1: Try Screen Capture API (modern browsers)
+      if ('getDisplayMedia' in navigator.mediaDevices) {
+        try {
+          const stream = await navigator.mediaDevices.getDisplayMedia({
+            video: {
+              width: { ideal: window.screen.width },
+              height: { ideal: window.screen.height }
+            }
+          });
+
+          // Create video element to capture frame
+          const video = document.createElement('video');
+          video.srcObject = stream;
+          video.play();
+
+          video.addEventListener('loadedmetadata', () => {
+            // Create canvas to capture frame
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+
+            if (ctx) {
+              ctx.drawImage(video, 0, 0);
+
+              // Convert to blob and download
+              canvas.toBlob((blob) => {
+                if (blob) {
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `chart-screenshot-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }
+              }, 'image/png');
+            }
+
+            // Stop the stream
+            stream.getTracks().forEach(track => track.stop());
+            setIsCapturingScreenshot(false);
+          });
+
+          return;
+        } catch (screenCaptureError) {
+          console.warn('Screen Capture API failed, trying alternative method:', screenCaptureError);
+        }
+      }
+
+      // Method 2: Try html2canvas as fallback
+      const html2canvas = await import('html2canvas');
+      const canvas = await html2canvas.default(document.body, {
+        height: window.innerHeight,
+        width: window.innerWidth,
+        useCORS: true,
+        allowTaint: true
+      });
+
+      // Convert canvas to blob and download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `chart-screenshot-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+
+    } catch (error) {
+      console.error('Screenshot failed:', error);
+
+      // Method 3: Fallback notification for manual screenshot
+      if (window.confirm('Automatic screenshot failed. Would you like instructions for taking a manual screenshot?')) {
+        const instructions = `
+Manual Screenshot Instructions:
+• Windows: Press Windows + Shift + S, then select area
+• Mac: Press Cmd + Shift + 4, then select area
+• Chrome: Press Ctrl/Cmd + Shift + I, then Ctrl/Cmd + Shift + P, type "screenshot"
+• Firefox: Right-click → "Take Screenshot"
+        `;
+        alert(instructions);
+      }
+    } finally {
+      setIsCapturingScreenshot(false);
+    }
+  }, [isCapturingScreenshot]);
+
+  // Export functionality
+  const handleExport = useCallback((format: string) => {
+    console.log(`Exporting chart data as ${format}`);
+    // TODO: Implement actual export functionality
+    setIsExportOpen(false);
+  }, []);
 
   const handleSymbolSelect = (symbol: SymbolData) => {
     setCurrentSymbol(symbol);
@@ -1471,6 +2128,14 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
     // Notify parent component of timeframe change
     onTimeframeChange?.(timeframe);
     console.log("Selected timeframe:", timeframe);
+  };
+
+  const handleChartTypeSelect = (chartType: ChartType) => {
+    setCurrentChartType(chartType);
+    setIsChartTypeOpen(false);
+    // Notify parent component of chart type change
+    onChartTypeChange?.(chartType);
+    console.log("Selected chart type:", chartType);
   };
 
   const handleIndicatorSelect = (indicator: IndicatorType) => {
@@ -1539,7 +2204,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
           <div className="h-full flex items-center">
             <motion.button
               onClick={() => setIsSearchOpen(true)}
-              className={`flex items-center justify-between gap-3 px-3 py-1.5 transition-all duration-300 rounded-md text-sm min-w-[220px] max-w-[300px] ${
+              className={`flex items-center justify-between gap-1.5 px-2 py-1 transition-all duration-300 rounded-md text-sm min-w-[140px] max-w-[180px] ${
                 theme === 'dark'
                   ? 'text-white hover:bg-zinc-900'
                   : 'text-black hover:bg-zinc-200'
@@ -1547,11 +2212,11 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="flex items-center gap-1 flex-1 min-w-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -1566,7 +2231,7 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
                 <span className="font-medium tracking-wide truncate">{currentSymbol.symbol}</span>
               </div>
               {/* Invisible spacer to maintain button width */}
-              <div className="w-8 flex-shrink-0"></div>
+              <div className="w-4 flex-shrink-0"></div>
             </motion.button>
           </div>
 
@@ -1611,6 +2276,42 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
             <div className={`w-px h-5 ${theme === 'dark' ? 'bg-zinc-600' : 'bg-zinc-400'}`}></div>
           </div>
 
+          {/* Chart Type Selector */}
+          <div className="h-full flex items-center">
+            <motion.button
+              ref={chartTypeButtonRef}
+              onClick={() => setIsChartTypeOpen(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
+                theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+            <ChartTypeIcon type={currentChartType} size="header" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}
+            >
+              <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </motion.button>
+          </div>
+
+          {/* Vertical Separator Line */}
+          <div className="flex items-center px-3">
+            <div className={`w-px h-5 ${theme === 'dark' ? 'bg-zinc-600' : 'bg-zinc-400'}`}></div>
+          </div>
+
           {/* Indicators Button */}
           <div className="h-full flex items-center">
             <motion.button
@@ -1626,8 +2327,8 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
             >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="12"
-              height="12"
+              width="24"
+              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -1642,25 +2343,270 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
               <span className="font-medium">Indicators</span>
             </motion.button>
           </div>
+
+          {/* Vertical Separator Line */}
+          <div className="flex items-center px-3">
+            <div className={`w-px h-5 ${theme === 'dark' ? 'bg-zinc-600' : 'bg-zinc-400'}`}></div>
+          </div>
+
+          {/* Replay Button */}
+          <div className="h-full flex items-center">
+            <motion.button
+              onClick={() => {
+                // TODO: Add replay functionality
+                console.log('Replay clicked');
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 transition-all duration-300 rounded-md text-sm ${
+                theme === 'dark'
+                  ? 'text-white hover:bg-zinc-900'
+                  : 'text-black hover:bg-zinc-200'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Replay"
+            >
+              {/* Two connected rewind/replay icons */}
+              <div className="flex items-center -space-x-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}
+                >
+                  <polygon points="13,7 13,17 6,12"></polygon>
+                </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}
+                >
+                  <polygon points="13,7 13,17 6,12"></polygon>
+                </svg>
+              </div>
+              <span className="font-medium">Replay</span>
+            </motion.button>
+          </div>
         </div>
 
         {/* Empty space */}
         <div className="flex-1"></div>
       </div>
 
-      {/* Right sidebar exit button section - aligned with right sidebar width (52px) */}
-      <div className="w-[52px] flex items-center justify-center">
+      {/* Right section with export, screen, settings, screenshot, fullscreen and logout buttons */}
+      <div className="flex items-center gap-1 pr-2">
+        {/* Export Button */}
+        <motion.button
+          ref={exportButtonRef}
+          onClick={() => setIsExportOpen(true)}
+          className={`p-2 transition-all duration-300 rounded ${
+            theme === 'dark'
+              ? 'text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800'
+              : 'text-zinc-600 hover:text-zinc-700 hover:bg-zinc-200'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          title="Export"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7,10 12,15 17,10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </motion.button>
+
+        {/* Screen/Monitor Button */}
+        <motion.button
+          onClick={() => {
+            // TODO: Add screen/monitor functionality
+            console.log('Screen clicked');
+          }}
+          className={`p-2 transition-all duration-300 rounded ${
+            theme === 'dark'
+              ? 'text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800'
+              : 'text-zinc-600 hover:text-zinc-700 hover:bg-zinc-200'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          title="Screen"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </motion.button>
+
+        {/* Settings Button */}
+        <motion.button
+          onClick={() => {
+            // TODO: Add settings functionality
+            console.log('Settings clicked');
+          }}
+          className={`p-2 transition-all duration-300 rounded ${
+            theme === 'dark'
+              ? 'text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800'
+              : 'text-zinc-600 hover:text-zinc-700 hover:bg-zinc-200'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          title="Settings"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </motion.button>
+
+        {/* Screenshot Button */}
+        <motion.button
+          onClick={handleScreenshot}
+          disabled={isCapturingScreenshot}
+          className={`p-2 transition-all duration-300 rounded ${
+            isCapturingScreenshot
+              ? theme === 'dark'
+                ? 'text-zinc-500 bg-zinc-800 cursor-not-allowed'
+                : 'text-zinc-400 bg-zinc-200 cursor-not-allowed'
+              : theme === 'dark'
+                ? 'text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800'
+                : 'text-zinc-600 hover:text-zinc-700 hover:bg-zinc-200'
+          }`}
+          whileHover={!isCapturingScreenshot ? { scale: 1.05 } : {}}
+          whileTap={!isCapturingScreenshot ? { scale: 0.95 } : {}}
+          title={isCapturingScreenshot ? "Taking Screenshot..." : "Take Screenshot"}
+        >
+          {isCapturingScreenshot ? (
+            // Loading spinner
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="animate-spin"
+            >
+              <path d="M21 12a9 9 0 11-6.219-8.56"></path>
+            </svg>
+          ) : (
+            // Camera icon
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+              <circle cx="12" cy="13" r="3"></circle>
+            </svg>
+          )}
+        </motion.button>
+
+        {/* Fullscreen Toggle Button */}
+        <motion.button
+          onClick={onFullscreenToggle}
+          className={`p-2 transition-all duration-300 rounded ${
+            theme === 'dark'
+              ? 'text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800'
+              : 'text-zinc-600 hover:text-zinc-700 hover:bg-zinc-200'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            {isFullscreen ? (
+              // Minimize/Exit fullscreen icon
+              <>
+                <path d="M8 3v3a2 2 0 0 1-2 2H3"></path>
+                <path d="M21 8h-3a2 2 0 0 1-2-2V3"></path>
+                <path d="M3 16h3a2 2 0 0 1 2 2v3"></path>
+                <path d="M16 21v-3a2 2 0 0 1 2-2h3"></path>
+              </>
+            ) : (
+              // Maximize/Enter fullscreen icon
+              <>
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+              </>
+            )}
+          </svg>
+        </motion.button>
+
+        {/* Logout Button */}
         <button
           onClick={() => window.location.href = '/'}
-          className={`p-2 transition-colors duration-200 ${
+          className={`p-2 transition-colors duration-200 rounded ${
             theme === 'dark' ? 'hover:bg-zinc-800' : 'hover:bg-zinc-200'
           }`}
           title="Exit"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -1695,11 +2641,29 @@ export function ChartHeader({ onSymbolChange, onTimeframeChange, onIndicatorAdd,
         buttonRef={timeframeButtonRef}
       />
 
+      {/* Chart Type Selector Popup */}
+      <ChartTypeSelector
+        isOpen={isChartTypeOpen}
+        onClose={() => setIsChartTypeOpen(false)}
+        onSelect={handleChartTypeSelect}
+        currentChartType={currentChartType}
+        buttonRef={chartTypeButtonRef}
+      />
+
       {/* Indicators Selector Popup */}
       <IndicatorsSelector
         isOpen={isIndicatorsOpen}
         onClose={() => setIsIndicatorsOpen(false)}
         onSelect={handleIndicatorSelect}
+        onOpenCodeEditor={onIndicatorOpenCodeEditor}
+      />
+
+      {/* Export Options Panel */}
+      <ExportPanel
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        onExport={handleExport}
+        buttonRef={exportButtonRef}
       />
     </header>
   );

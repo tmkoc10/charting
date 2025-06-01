@@ -153,6 +153,16 @@ img[src*="tradingview"] {
   .scrollbar-black::-webkit-scrollbar-thumb:hover {
     background: #333333;
   }
+
+  /* No scrollbar utility class */
+  .no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* WebKit */
+  }
 }
 
 /* Global scrollbar styling for consistent black scrollbars across the entire website */
