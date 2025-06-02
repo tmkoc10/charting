@@ -32,16 +32,16 @@ export function WorldMapSection() {
               ))}
             </span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-sm md:text-lg text-neutral-500 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Connect with teams and clients worldwide. Our platform enables seamless 
-            collaboration across continents, breaking down geographical barriers for 
-            modern remote work.
+            Access global markets with real-time charts powered by AI-driven algorithmic trading.
+            Connect to 75+ trusted brokers worldwide and join our thriving community of traders
+            spanning every continent and time zone.
           </motion.p>
         </div>
 

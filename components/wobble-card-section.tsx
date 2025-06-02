@@ -39,8 +39,8 @@ export function WobbleCardSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Discover our innovative features through interactive cards that respond to your touch.
-            Each card showcases a unique aspect of our platform&apos;s capabilities.
+            Experience advanced trading tools through interactive demonstrations.
+            Each card highlights powerful features designed to enhance your trading performance.
           </motion.p>
         </div>
 
@@ -58,11 +58,11 @@ export function WobbleCardSection() {
           >
             <div className="max-w-xs">
               <h2 className="text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-                AI-Powered Analytics
+                AI-Driven Trading
               </h2>
               <p className="mt-4 text-left text-base/6 text-neutral-200">
-                Harness the power of artificial intelligence to gain deep insights into your data.
-                Our advanced algorithms process millions of data points in real-time.
+                Leverage cutting-edge artificial intelligence for algorithmic trading strategies.
+                Our AI analyzes market patterns and executes trades with precision timing.
               </p>
             </div>
             <div className="absolute -right-4 lg:-right-[40%] -bottom-10 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full opacity-20 blur-xl"></div>
@@ -70,22 +70,22 @@ export function WobbleCardSection() {
 
           <WobbleCard containerClassName="col-span-1 min-h-[300px] bg-gradient-to-br from-emerald-900 to-teal-900">
             <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-              Real-time Sync
+              Real-time Charts
             </h2>
             <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
-              Experience seamless synchronization across all your devices. Changes are reflected instantly,
-              ensuring your team stays connected.
+              Professional charting with live market data, technical indicators, and customizable timeframes.
+              Monitor price movements with millisecond precision.
             </p>
           </WobbleCard>
 
           <WobbleCard containerClassName="col-span-1 lg:col-span-3 bg-gradient-to-br from-slate-900 to-gray-900 min-h-[500px] lg:min-h-[600px] xl:min-h-[300px]">
             <div className="max-w-sm">
               <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-                Enterprise Security & Scalability
+                Advanced Market Analytics
               </h2>
               <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
-                Built for enterprise-grade security with end-to-end encryption, advanced threat protection,
-                and unlimited scalability to grow with your business needs.
+                Comprehensive trading tools with market insights, risk management, and portfolio analytics.
+                Make informed decisions with real-time data and professional-grade indicators.
               </p>
             </div>
             <div className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 w-60 h-60 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full opacity-15 blur-2xl"></div>

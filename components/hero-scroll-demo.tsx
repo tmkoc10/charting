@@ -10,24 +10,24 @@ export function HeroScrollDemo() {
         titleComponent={
           <>
             <h1 className="text-4xl font-semibold text-white">
-              Unleash the power of <br />
+              Smarter Charts. <br />
               <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
-                Scroll Animations
+                Smarter Trades
               </span>
             </h1>
           </>
         }
       >
         <HeroImage
-          src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Advanced trading platform dashboard with real-time charts and analytics"
-          height={720}
-          width={1400}
-          className="mx-auto rounded-2xl h-full object-left-top"
-          quality={90}
+          src="/images/hero-viewmarket-charts.png"
+          alt="ViewMarket complete trading interface with header, left sidebar tools, main chart area, footer with brokers and strategy tester, and right sidebar with AI assistant"
+          height={900}
+          width={1600}
+          className="mx-auto rounded-2xl h-full w-full object-contain"
+          quality={95}
           placeholder="blur"
           blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1400px"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1600px"
         />
       </ContainerScroll>
     </div>

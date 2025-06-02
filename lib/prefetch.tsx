@@ -29,7 +29,7 @@ export function usePrefetchStrategy() {
     const prefetchResources = () => {
       // Prefetch critical images
       const criticalImages = [
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1400&auto=format&fit=crop'
+        '/images/hero-viewmarket-charts.png'
       ];
 
       criticalImages.forEach(src => {

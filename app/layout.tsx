@@ -64,8 +64,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Preconnect to external domains for faster loading */}
-        <link rel="preconnect" href="https://images.unsplash.com" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        {/* Removed Unsplash preconnect as we now use local images */}
 
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />

@@ -5,39 +5,39 @@ import { PinContainer } from "./ui/3d-pin";
 export function FeaturesSection() {
   const features = [
     {
-      title: "Advanced AI Integration",
-      description: "Seamlessly integrate cutting-edge AI capabilities into your workflow with our advanced machine learning algorithms.",
-      href: "#ai-integration",
+      title: "Realtime Charts",
+      description: "Advanced real-time charting with multiple timeframes, technical indicators, and professional trading tools.",
+      href: "#realtime-charts",
       gradient: "from-violet-500 via-purple-500 to-blue-500"
     },
     {
-      title: "Real-time Collaboration",
-      description: "Work together in real-time with your team members across different time zones and devices.",
-      href: "#collaboration",
+      title: "AI Coding Terminal",
+      description: "Intelligent coding environment with AI assistance for developing custom trading strategies and indicators.",
+      href: "#ai-terminal",
       gradient: "from-emerald-500 via-teal-500 to-cyan-500"
     },
     {
-      title: "Smart Analytics",
-      description: "Get deep insights into your data with our intelligent analytics dashboard and reporting tools.",
-      href: "#analytics",
+      title: "Scalping Tool",
+      description: "High-frequency trading tools designed for scalpers with ultra-fast execution and precision timing.",
+      href: "#scalping-tool",
       gradient: "from-orange-500 via-red-500 to-pink-500"
     },
     {
-      title: "Cloud Security",
-      description: "Enterprise-grade security with end-to-end encryption and advanced threat protection.",
-      href: "#security",
+      title: "Copy Trading",
+      description: "Follow and automatically copy trades from successful traders with customizable risk management.",
+      href: "#copy-trading",
       gradient: "from-indigo-500 via-blue-500 to-purple-500"
     },
     {
-      title: "API Integration",
-      description: "Connect with thousands of apps and services through our robust API and webhook system.",
-      href: "#api",
+      title: "Strategy Marketplace",
+      description: "Browse, purchase, and sell proven trading strategies from our community of expert traders.",
+      href: "#strategy-marketplace",
       gradient: "from-yellow-500 via-orange-500 to-red-500"
     },
     {
-      title: "24/7 Support",
-      description: "Round-the-clock customer support with dedicated account managers and technical assistance.",
-      href: "#support",
+      title: "Personalised Developer",
+      description: "Custom development services and personalized trading solutions tailored to your specific needs.",
+      href: "#personalised-developer",
       gradient: "from-green-500 via-emerald-500 to-teal-500"
     }
   ];
