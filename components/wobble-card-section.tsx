@@ -5,19 +5,19 @@ import { motion } from "motion/react";
 
 export function WobbleCardSection() {
   return (
-    <div className="py-20 bg-black w-full">
+    <div className="py-20 bg-white w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
           <motion.h2
-            className="text-3xl md:text-5xl font-bold text-white mb-4"
+            className="text-3xl md:text-5xl font-bold text-black mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
             Interactive{" "}
-            <span className="text-neutral-400">
+            <span className="text-gray-600">
               {"Experience".split("").map((letter, idx) => (
                 <motion.span
                   key={idx}
@@ -33,7 +33,7 @@ export function WobbleCardSection() {
             </span>
           </motion.h2>
           <motion.p
-            className="text-sm md:text-lg text-neutral-500 max-w-2xl mx-auto"
+            className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}

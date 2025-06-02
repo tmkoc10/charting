@@ -59,9 +59,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       // Save to localStorage with charts-specific key
       localStorage.setItem('charts-theme', theme);
     } else {
-      // For non-charts pages, force dark theme classes for landing page
+      // For non-charts pages, force light theme classes for landing page
       root.classList.remove('light', 'dark');
-      root.classList.add('dark');
+      root.classList.add('light');
     }
   }, [theme, mounted, isChartsPage]);
 
@@ -81,7 +81,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
-    return <div className={isChartsPage ? "light" : "dark"}>{children}</div>;
+    return <div className={isChartsPage ? "light" : "light"}>{children}</div>;
   }
 
   return (

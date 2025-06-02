@@ -134,14 +134,20 @@ export function useSmartPrefetch() {
   }, []);
 }
 
-// Preload critical fonts
+// Preload critical fonts and resources
 export function usePreloadFonts() {
   useEffect(() => {
     const fonts: string[] = [
-      // Add any critical font URLs here
-      // Example: '/fonts/geist-sans.woff2'
+      // Google Fonts are already optimized via next/font
+      // Add any additional critical font URLs here if needed
     ];
 
+    const criticalResources: Array<{url: string, as: string, type?: string}> = [
+      { url: '/images/hero-viewmarket-charts.png', as: 'image', type: 'image/png' },
+      // Add other critical resources
+    ];
+
+    // Preload fonts
     fonts.forEach(fontUrl => {
       const link = document.createElement('link');
       link.rel = 'preload';
@@ -149,6 +155,16 @@ export function usePreloadFonts() {
       link.as = 'font';
       link.type = 'font/woff2';
       link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    });
+
+    // Preload critical resources
+    criticalResources.forEach(resource => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = resource.url;
+      link.as = resource.as;
+      if (resource.type) link.type = resource.type;
       document.head.appendChild(link);
     });
   }, []);

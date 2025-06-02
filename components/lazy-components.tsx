@@ -5,13 +5,13 @@ import { Suspense, useState, useEffect } from 'react';
 
 // Loading components for better UX
 const SectionSkeleton = () => (
-  <div className="w-full py-20 bg-black">
+  <div className="w-full py-20 bg-white">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="animate-pulse">
-        <div className="h-12 bg-gray-800 rounded-lg mb-8 mx-auto max-w-md"></div>
+        <div className="h-12 bg-gray-200 rounded-lg mb-8 mx-auto max-w-md"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-64 bg-gray-800 rounded-lg"></div>
+            <div key={i} className="h-64 bg-gray-200 rounded-lg"></div>
           ))}
         </div>
       </div>
@@ -20,10 +20,10 @@ const SectionSkeleton = () => (
 );
 
 const HeroSkeleton = () => (
-  <div className="h-screen bg-black flex items-center justify-center">
+  <div className="h-screen bg-white flex items-center justify-center">
     <div className="animate-pulse">
-      <div className="h-16 bg-gray-800 rounded-lg mb-8 mx-auto max-w-lg"></div>
-      <div className="h-96 bg-gray-800 rounded-lg mx-auto max-w-4xl"></div>
+      <div className="h-16 bg-gray-200 rounded-lg mb-8 mx-auto max-w-lg"></div>
+      <div className="h-96 bg-gray-200 rounded-lg mx-auto max-w-4xl"></div>
     </div>
   </div>
 );
@@ -38,11 +38,11 @@ const ChartSkeleton = () => (
 );
 
 // Lazy load heavy components with optimized loading
-export const LazyHeroScrollDemo = dynamic(
-  () => import('./hero-scroll-demo').then(mod => ({ default: mod.HeroScrollDemo })),
+export const LazyHeroSection = dynamic(
+  () => import('./hero-section').then(mod => ({ default: mod.HeroSection })),
   {
     loading: () => <HeroSkeleton />,
-    ssr: false, // Disable SSR for heavy animation components
+    ssr: true, // Enable SSR for simple hero section
   }
 );
 

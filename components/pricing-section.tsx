@@ -72,19 +72,19 @@ export function PricingSection() {
   ];
 
   return (
-    <div className="py-20 bg-black w-full">
+    <div className="py-20 bg-white w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
           <motion.h2
-            className="text-3xl md:text-5xl font-bold text-white mb-4"
+            className="text-3xl md:text-5xl font-bold text-black mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
             Choose Your{" "}
-            <span className="text-neutral-400">
+            <span className="text-gray-600">
               {"Plan".split("").map((letter, idx) => (
                 <motion.span
                   key={idx}
@@ -100,7 +100,7 @@ export function PricingSection() {
             </span>
           </motion.h2>
           <motion.p
-            className="text-sm md:text-lg text-neutral-500 max-w-2xl mx-auto mb-8"
+            className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto mb-8"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -118,14 +118,14 @@ export function PricingSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <span className={cn("text-sm", !isAnnual ? "text-white" : "text-neutral-400")}>
+            <span className={cn("text-sm", !isAnnual ? "text-black" : "text-gray-600")}>
               Monthly
             </span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
               className={cn(
                 "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-                isAnnual ? "bg-purple-600" : "bg-neutral-600"
+                isAnnual ? "bg-purple-600" : "bg-gray-400"
               )}
             >
               <span
@@ -135,9 +135,9 @@ export function PricingSection() {
                 )}
               />
             </button>
-            <span className={cn("text-sm", isAnnual ? "text-white" : "text-neutral-400")}>
+            <span className={cn("text-sm", isAnnual ? "text-black" : "text-gray-600")}>
               Annual
-              <span className="ml-1 text-xs text-green-400">(Save 17%)</span>
+              <span className="ml-1 text-xs text-green-600">(Save 17%)</span>
             </span>
           </motion.div>
         </div>
@@ -151,7 +151,7 @@ export function PricingSection() {
           viewport={{ once: true }}
         >
           <div className="overflow-x-auto scrollbar-black">
-            <table className="w-full border-collapse border border-neutral-800 rounded-2xl overflow-hidden table-fixed">
+            <table className="w-full border-collapse border border-gray-300 rounded-2xl overflow-hidden table-fixed bg-white">
               <colgroup>
                 <col className="w-1/5" />
                 <col className="w-1/5" />
@@ -161,8 +161,8 @@ export function PricingSection() {
               </colgroup>
               <thead>
                 {/* Pricing Header Row */}
-                <tr className="border-b border-neutral-800">
-                  <th className="text-left py-6 px-6 text-white font-medium border-r border-neutral-800 w-1/5">
+                <tr className="border-b border-gray-300">
+                  <th className="text-left py-6 px-6 text-black font-medium border-r border-gray-300 w-1/5">
                     <div className="flex items-center">
                       <span className="text-lg font-bold">Plans</span>
                     </div>
@@ -170,25 +170,25 @@ export function PricingSection() {
                   {pricingTiers.map((tier, index) => (
                     <motion.th
                       key={tier.name}
-                      className="text-center py-6 px-6 border-r border-neutral-800 last:border-r-0 w-1/5"
+                      className="text-center py-6 px-6 border-r border-gray-300 last:border-r-0 w-1/5"
                       initial={{ opacity: 0, y: -20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.1 * index }}
                       viewport={{ once: true }}
                     >
                       <div className="space-y-3">
-                        <div className="text-xl font-bold text-white">{tier.name}</div>
-                        <div className="text-3xl font-bold text-white">
+                        <div className="text-xl font-bold text-black">{tier.name}</div>
+                        <div className="text-3xl font-bold text-black">
                           {tier.price.monthly === 0 ? 'Free' : `₹${isAnnual ? Math.floor(tier.price.annual / 12) : tier.price.monthly}`}
-                          {tier.price.monthly !== 0 && <span className="text-sm text-neutral-400 font-normal">/month</span>}
+                          {tier.price.monthly !== 0 && <span className="text-sm text-gray-600 font-normal">/month</span>}
                         </div>
                         {isAnnual && tier.price.annual > 0 && (
-                          <div className="text-xs text-green-400">
+                          <div className="text-xs text-green-600">
                             Billed annually (₹{tier.price.annual}/year)
                           </div>
                         )}
                         <motion.button
-                          className="py-1.5 px-3 rounded-md font-medium text-xs transition-all duration-300 bg-neutral-800 text-white hover:bg-neutral-700"
+                          className="py-1.5 px-3 rounded-md font-medium text-xs transition-all duration-300 bg-black text-white hover:bg-gray-800"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
@@ -203,20 +203,20 @@ export function PricingSection() {
                 {comparisonFeatures.map((feature, index) => (
                   <motion.tr
                     key={feature.name}
-                    className="border-b border-neutral-800/50"
+                    className="border-b border-gray-200"
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: 0.05 * index }}
                     viewport={{ once: true }}
                   >
-                    <td className="py-4 px-6 text-neutral-300 border-r border-neutral-800 font-medium w-1/5">
+                    <td className="py-4 px-6 text-gray-700 border-r border-gray-300 font-medium w-1/5">
                       {feature.name}
                     </td>
                     {[feature.free, feature.basic, feature.pro, feature.enterprise].map((value, tierIndex) => (
-                      <td key={tierIndex} className="py-4 px-6 text-center border-r border-neutral-800 last:border-r-0 w-1/5">
+                      <td key={tierIndex} className="py-4 px-6 text-center border-r border-gray-300 last:border-r-0 w-1/5">
                         {typeof value === 'string' ? (
                           <motion.span
-                            className="text-neutral-300 font-medium"
+                            className="text-gray-700 font-medium"
                             initial={{ opacity: 0, scale: 0.8 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.3, delay: 0.1 * index }}

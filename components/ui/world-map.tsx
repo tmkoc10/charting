@@ -20,12 +20,12 @@ export default function WorldMap({
   const svgRef = useRef<SVGSVGElement>(null);
   const map = new DottedMap({ height: 100, grid: "diagonal" });
 
-  // Since the app is hardcoded to dark mode, we'll use dark theme settings
+  // Use light theme settings for the landing page
   const svgMap = map.getSVG({
     radius: 0.22,
-    color: "#FFFFFF40",
+    color: "#00000040",
     shape: "circle",
-    backgroundColor: "black",
+    backgroundColor: "transparent",
   });
 
   const projectPoint = (lat: number, lng: number) => {
@@ -44,7 +44,7 @@ export default function WorldMap({
   };
 
   return (
-    <div className="w-full aspect-[2/1] dark:bg-black bg-white rounded-lg  relative font-sans">
+    <div className="w-full aspect-[2/1] bg-white rounded-lg  relative font-sans">
       <Image
         src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
         className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,white_10%,white_90%,transparent)] pointer-events-none select-none"

@@ -5,19 +5,19 @@ import { motion } from "motion/react";
 
 export function WorldMapSection() {
   return (
-    <div className="py-20 bg-black w-full">
+    <div className="py-20 bg-white w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <motion.h2 
-            className="text-3xl md:text-5xl font-bold text-white mb-4"
+          <motion.h2
+            className="text-3xl md:text-5xl font-bold text-black mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
             Global{" "}
-            <span className="text-neutral-400">
+            <span className="text-gray-600">
               {"Connectivity".split("").map((letter, idx) => (
                 <motion.span
                   key={idx}
@@ -33,7 +33,7 @@ export function WorldMapSection() {
             </span>
           </motion.h2>
           <motion.p
-            className="text-sm md:text-lg text-neutral-500 max-w-2xl mx-auto"
+            className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -99,7 +99,7 @@ export function WorldMapSection() {
         </motion.div>
 
         {/* Stats Section */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -107,28 +107,28 @@ export function WorldMapSection() {
           viewport={{ once: true }}
         >
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <div className="text-2xl md:text-3xl font-bold text-black mb-2">
               150+
             </div>
-            <div className="text-sm text-neutral-500">Countries</div>
+            <div className="text-sm text-gray-600">Countries</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <div className="text-2xl md:text-3xl font-bold text-black mb-2">
               50k+
             </div>
-            <div className="text-sm text-neutral-500">Active Users</div>
+            <div className="text-sm text-gray-600">Active Users</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <div className="text-2xl md:text-3xl font-bold text-black mb-2">
               99.9%
             </div>
-            <div className="text-sm text-neutral-500">Uptime</div>
+            <div className="text-sm text-gray-600">Uptime</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <div className="text-2xl md:text-3xl font-bold text-black mb-2">
               24/7
             </div>
-            <div className="text-sm text-neutral-500">Support</div>
+            <div className="text-sm text-gray-600">Support</div>
           </div>
         </motion.div>
       </div>

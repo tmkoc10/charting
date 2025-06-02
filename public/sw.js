@@ -1,12 +1,14 @@
-const CACHE_NAME = 'trading-platform-v1';
-const STATIC_CACHE_NAME = 'static-v1';
-const DYNAMIC_CACHE_NAME = 'dynamic-v1';
+const CACHE_NAME = 'viewmarket-v2';
+const STATIC_CACHE_NAME = 'static-v2';
+const DYNAMIC_CACHE_NAME = 'dynamic-v2';
 
-// Assets to cache immediately
+// Assets to cache immediately for faster loading
 const STATIC_ASSETS = [
   '/',
   '/charts',
   '/manifest.json',
+  '/images/hero-viewmarket-charts.png',
+  '/_next/static/css/app/layout.css',
   // Add other critical assets here
 ];
 

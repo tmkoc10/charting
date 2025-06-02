@@ -106,7 +106,7 @@ export function FooterSection() {
   };
 
   return (
-    <footer className="bg-black text-white py-16 border-t border-neutral-800">
+    <footer className="bg-white text-black py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Logo */}
@@ -135,13 +135,13 @@ export function FooterSection() {
               transition={{ duration: 0.6, delay: 0.1 * index }}
               viewport={{ once: true }}
             >
-              <h3 className="text-white font-semibold mb-4">{title}</h3>
+              <h3 className="text-black font-semibold mb-4">{title}</h3>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={typeof link === 'string' ? link : link.name}>
                     <a
                       href={typeof link === 'string' ? "#" : link.href}
-                      className="text-neutral-400 hover:text-white transition-colors duration-200"
+                      className="text-gray-600 hover:text-black transition-colors duration-200"
                     >
                       {typeof link === 'string' ? link : link.name}
                     </a>
@@ -159,24 +159,24 @@ export function FooterSection() {
             transition={{ duration: 0.6, delay: 0.5 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-white font-semibold mb-4">Newsletter</h3>
+            <h3 className="text-black font-semibold mb-4">Newsletter</h3>
             <form onSubmit={handleSubmit} className="space-y-3">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-white text-black rounded-md font-medium hover:bg-neutral-200 transition-colors duration-200"
+                className="w-full px-4 py-2 bg-black text-white rounded-md font-medium hover:bg-gray-800 transition-colors duration-200"
               >
                 Submit
               </button>
             </form>
-            <p className="text-neutral-400 text-sm mt-3">
+            <p className="text-gray-600 text-sm mt-3">
               Don&apos;t miss any update!
             </p>
           </motion.div>
@@ -184,7 +184,7 @@ export function FooterSection() {
 
         {/* Floating Dock for Social Media */}
         <motion.div
-          className="flex justify-center mt-12 pt-8 border-t border-neutral-800"
+          className="flex justify-center mt-12 pt-8 border-t border-gray-200"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
@@ -195,13 +195,13 @@ export function FooterSection() {
 
         {/* Disclaimer */}
         <motion.div
-          className="mt-8 pt-8 border-t border-neutral-800"
+          className="mt-8 pt-8 border-t border-gray-200"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
           viewport={{ once: true }}
         >
-          <p className="text-neutral-400 text-sm text-center max-w-4xl mx-auto">
+          <p className="text-gray-600 text-sm text-center max-w-4xl mx-auto">
             Trading involves risk. Users trade at their own risk. ViewMarket only provides tools and is not liable for any financial
             losses. Past performance is not indicative of future results. Always conduct your own research before making
             investment decisions.
@@ -210,13 +210,13 @@ export function FooterSection() {
 
         {/* Copyright */}
         <motion.div
-          className="mt-6 pt-6 border-t border-neutral-800"
+          className="mt-6 pt-6 border-t border-gray-200"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           viewport={{ once: true }}
         >
-          <p className="text-neutral-500 text-xs text-center">
+          <p className="text-gray-700 text-xs text-center">
             © {new Date().getFullYear()} ViewMarket. All rights reserved.
           </p>
         </motion.div>

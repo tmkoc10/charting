@@ -223,17 +223,17 @@ export function measureWebVitals() {
   }
 }
 
-// Performance budget checker
+// Performance budget checker with optimized thresholds
 export function checkPerformanceBudget() {
   const monitor = PerformanceMonitor.getInstance();
   const metrics = monitor.getMetrics();
-  
+
   const budgets = {
-    'first-contentful-paint': 1500, // 1.5s
-    'largest-contentful-paint': 2500, // 2.5s
-    'first-input-delay': 100, // 100ms
-    'cumulative-layout-shift': 0.1, // 0.1
-    'time-to-first-byte': 600, // 600ms
+    'first-contentful-paint': 1200, // 1.2s (more aggressive)
+    'largest-contentful-paint': 2000, // 2.0s (more aggressive)
+    'first-input-delay': 75, // 75ms (more aggressive)
+    'cumulative-layout-shift': 0.05, // 0.05 (more aggressive)
+    'time-to-first-byte': 400, // 400ms (more aggressive)
   };
 
   const violations: string[] = [];

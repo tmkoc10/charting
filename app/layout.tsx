@@ -4,6 +4,7 @@ import { QueryProvider } from "@/lib/query-client";
 import { PerformanceMonitoringProvider } from "@/lib/performance-provider";
 import { PrefetchProvider } from "@/lib/prefetch";
 import { ThemeProvider } from "@/lib/theme-context";
+// import { CriticalOptimizationsProvider } from "@/lib/critical-optimizations-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -63,8 +64,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Critical resource preloading */}
+        <link rel="preload" href="/images/hero-viewmarket-charts.png" as="image" type="image/png" />
+        <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
+
+        {/* DNS prefetch for external domains */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
         {/* Preconnect to external domains for faster loading */}
-        {/* Removed Unsplash preconnect as we now use local images */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -73,16 +83,19 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
         {/* Theme color for mobile browsers */}
-        <meta name="theme-color" content="#000000" />
-        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
 
         {/* Apple touch icons */}
         <link rel="apple-touch-icon" href="/icon.svg" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
         {/* Prevent zoom on iOS */}
         <meta name="format-detection" content="telephone=no" />
+
+        {/* Performance hints */}
+        <meta httpEquiv="x-dns-prefetch-control" content="on" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

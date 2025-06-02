@@ -1,6 +1,6 @@
 import { NavbarDemo } from "@/components/navbar-demo";
 import {
-  LazyHeroScrollDemo,
+  LazyHeroSection,
   LazyFeaturesSection,
   LazyWorldMapSection,
   LazyWobbleCardSection,
@@ -11,39 +11,54 @@ import {
 
 export default function Home() {
   return (
-    <div className="relative w-full">
+    <div className="relative w-full min-h-screen">
       {/* Navigation Bar - Keep this loaded immediately for UX */}
       <NavbarDemo />
 
-      {/* Hero Section - Lazy load but prioritize */}
-      <LazySection>
-        <LazyHeroScrollDemo />
-      </LazySection>
+      {/* Main Content - Add padding for fixed navbar */}
+      <div className="relative pt-16">
+        {/* Hero Section */}
+        <section id="hero" className="min-h-screen">
+          <LazySection>
+            <LazyHeroSection />
+          </LazySection>
+        </section>
 
-      {/* Features Section - Keep SSR for SEO */}
-      <LazySection>
-        <LazyFeaturesSection />
-      </LazySection>
+        {/* Features Section */}
+        <section id="features" className="py-20">
+          <LazySection>
+            <LazyFeaturesSection />
+          </LazySection>
+        </section>
 
-      {/* World Map Section - Lazy load (heavy interactive component) */}
-      <LazySection>
-        <LazyWorldMapSection />
-      </LazySection>
+        {/* World Map Section - Load only when near viewport */}
+        <section id="global" className="py-20">
+          <LazySection>
+            <LazyWorldMapSection />
+          </LazySection>
+        </section>
 
-      {/* Wobble Card Section - Lazy load (heavy animations) */}
-      <LazySection>
-        <LazyWobbleCardSection />
-      </LazySection>
+        {/* Wobble Card Section - Load only when near viewport */}
+        <section id="interactive" className="py-20">
+          <LazySection>
+            <LazyWobbleCardSection />
+          </LazySection>
+        </section>
 
-      {/* Pricing Section - Keep SSR for business content */}
-      <LazySection>
-        <LazyPricingSection />
-      </LazySection>
+        {/* Pricing Section */}
+        <section id="pricing" className="py-20">
+          <LazySection>
+            <LazyPricingSection />
+          </LazySection>
+        </section>
 
-      {/* Footer Section - Keep SSR for SEO */}
-      <LazySection>
-        <LazyFooterSection />
-      </LazySection>
+        {/* Footer Section */}
+        <section id="footer">
+          <LazySection>
+            <LazyFooterSection />
+          </LazySection>
+        </section>
+      </div>
     </div>
   );
 }

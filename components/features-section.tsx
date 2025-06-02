@@ -43,21 +43,23 @@ export function FeaturesSection() {
   ];
 
   return (
-    <div className="bg-black w-full py-20">
+    <div className="w-full py-20 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            Powerful Features
-          </h2>
-          <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
-            Discover the comprehensive suite of tools and capabilities that make our platform 
-            the perfect choice for modern businesses and developers.
-          </p>
+        <div className="text-center mb-16 relative z-10">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 mx-auto max-w-4xl">
+            <h2 className="text-4xl md:text-6xl font-bold text-black mb-4">
+              Powerful Features
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              Discover the comprehensive suite of tools and capabilities that make our platform
+              the perfect choice for modern businesses and developers.
+            </p>
+          </div>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 relative z-10">
           {features.map((feature, index) => (
             <div key={index} className="flex justify-center">
               <PinContainer
@@ -65,12 +67,12 @@ export function FeaturesSection() {
                 href={feature.href}
                 containerClassName="w-full max-w-sm"
               >
-                <div className="flex basis-full flex-col p-6 tracking-tight text-slate-100/50 w-[20rem] h-[20rem]">
-                  <h3 className="max-w-xs !pb-2 !m-0 font-bold text-lg text-slate-100">
+                <div className="flex basis-full flex-col p-6 tracking-tight text-slate-800/70 w-[20rem] h-[20rem]">
+                  <h3 className="max-w-xs !pb-2 !m-0 font-bold text-lg text-slate-900">
                     {feature.title}
                   </h3>
                   <div className="text-base !m-0 !p-0 font-normal">
-                    <span className="text-slate-400">
+                    <span className="text-slate-600">
                       {feature.description}
                     </span>
                   </div>

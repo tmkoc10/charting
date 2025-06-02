@@ -7,6 +7,11 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  // Optimize for production
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
+
   theme: {
   	extend: {
   		colors: {
