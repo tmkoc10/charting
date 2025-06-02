@@ -35,13 +35,15 @@ export function DevTools() {
     return null;
   }
 
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
+  // Removed typeof window check to prevent hydration mismatch
+  // The ConditionalDevTools wrapper handles environment checks properly
   return (
     <Suspense fallback={null}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools
+        initialIsOpen={false}
+        buttonPosition="bottom-left"
+        position="bottom"
+      />
     </Suspense>
   );
 }
@@ -49,23 +51,33 @@ export function DevTools() {
 // Production-safe wrapper that returns null in production
 export function ConditionalDevTools() {
   // This check happens at build time for static optimization
+  // Only rely on build-time environment variables to avoid hydration mismatches
   if (process.env.NODE_ENV === 'production') {
     return null;
   }
 
-  // Additional runtime checks for extra safety
-  if (typeof window !== 'undefined') {
-    // Check for production indicators
-    const isProduction = 
-      window.location.hostname !== 'localhost' &&
-      window.location.hostname !== '127.0.0.1' &&
-      !window.location.hostname.includes('dev') &&
-      !window.location.hostname.includes('staging');
-
-    if (isProduction) {
-      return null;
-    }
+  // Check additional environment variables that are available at build time
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production') {
+    return null;
   }
 
+  if (process.env.VERCEL_ENV === 'production') {
+    return null;
+  }
+
+  if (process.env.NEXT_PUBLIC_DISABLE_REACT_QUERY_DEVTOOLS === 'true') {
+    return null;
+  }
+
+  if (process.env.DISABLE_REACT_QUERY_DEVTOOLS === 'true') {
+    return null;
+  }
+
+  // Check for additional flag to hide DevTools branding
+  if (process.env.NEXT_PUBLIC_HIDE_DEVTOOLS_BRANDING === 'true') {
+    return null;
+  }
+
+  // Always return DevTools in development to ensure consistent SSR/client rendering
   return <DevTools />;
 }

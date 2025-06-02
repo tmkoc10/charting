@@ -6,6 +6,121 @@ img[src*="tradingview"] {
   display: none !important;
 }
 
+/* Hide TanStack React Query DevTools logo and branding */
+[data-testid="react-query-devtools-logo"],
+[data-testid="tanstack-logo"],
+.tsqd-logo,
+.tsqd-branding,
+[class*="logo" i][class*="tanstack" i],
+[class*="logo" i][class*="react-query" i],
+[class*="branding" i][class*="tanstack" i],
+[aria-label*="TanStack" i],
+[aria-label*="React Query" i],
+[title*="TanStack" i],
+[title*="React Query" i] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* More specific selectors for React Query DevTools */
+[data-rq-devtools] [class*="logo"],
+[data-rq-devtools] [class*="brand"],
+[data-rq-devtools] svg[class*="logo"],
+[data-rq-devtools] img[alt*="TanStack"],
+[data-rq-devtools] img[alt*="React Query"],
+/* Target common DevTools header/title areas that contain branding */
+[class*="tsqd"] header,
+[class*="tsqd"] [class*="header"],
+[class*="tsqd"] [class*="title"],
+[class*="react-query-devtools"] header,
+[class*="react-query-devtools"] [class*="header"],
+[class*="react-query-devtools"] [class*="title"],
+/* Target any text elements that might contain branding */
+[class*="devtools"] h1,
+[class*="devtools"] h2,
+[class*="devtools"] h3,
+[class*="tsqd"] h1,
+[class*="tsqd"] h2,
+[class*="tsqd"] h3 {
+  display: none !important;
+}
+
+/* Hide the DevTools toggle button logo/branding */
+button[aria-label*="Open React Query Devtools"] svg,
+button[aria-label*="Close React Query Devtools"] svg,
+[class*="tsqd-open-btn"] svg,
+[class*="tsqd-close-btn"] svg {
+  display: none !important;
+}
+
+/* Replace logo with a simple text indicator */
+button[aria-label*="React Query Devtools"]:after {
+  content: "RQ" !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  color: white !important;
+}
+
+/* Additional comprehensive selectors for DevTools branding */
+[class*="tsqd"] [class*="logo"],
+[class*="tsqd"] [class*="brand"],
+[class*="react-query-devtools"] [class*="logo"],
+[class*="react-query-devtools"] [class*="brand"],
+div[style*="position: fixed"] [class*="logo"],
+div[style*="position: fixed"] svg[width="24"],
+div[style*="position: fixed"] svg[height="24"],
+/* Hide any potential branding in fixed positioned elements */
+[style*="position: fixed"] [class*="brand"],
+[style*="position: fixed"] [class*="logo"],
+/* Target specific DevTools panel elements */
+[class*="tsqd-panel"] [class*="header"],
+[class*="tsqd-panel"] [class*="title"],
+[class*="tsqd-panel"] header {
+  display: none !important;
+}
+
+/* Hide any SVG that might be the TanStack logo in DevTools */
+[class*="devtools"] svg[viewBox*="0 0 24 24"],
+[class*="tsqd"] svg[viewBox*="0 0 24 24"],
+button[class*="tsqd"] svg {
+  display: none !important;
+}
+
+/* Ensure the DevTools button remains functional but without logo */
+button[class*="tsqd"] {
+  background: #666 !important;
+  border-radius: 4px !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+button[class*="tsqd"]:before {
+  content: "RQ" !important;
+  color: white !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hide the entire DevTools if needed (can be controlled via environment variable) */
+.hide-react-query-devtools [class*="tsqd"],
+.hide-react-query-devtools [class*="react-query-devtools"] {
+  display: none !important;
+}
+
+/* More aggressive hiding of any TanStack branding that might appear */
+[class*="tanstack"],
+[id*="tanstack"],
+[data-testid*="tanstack"],
+svg[aria-label*="TanStack"],
+img[src*="tanstack"],
+a[href*="tanstack.com"] {
+  display: none !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

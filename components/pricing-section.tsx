@@ -16,6 +16,7 @@ interface PricingTier {
 
 interface Feature {
   name: string;
+  free: boolean | string;
   basic: boolean | string;
   pro: boolean | string;
   enterprise: boolean | string;
@@ -26,22 +27,29 @@ export function PricingSection() {
 
   const pricingTiers: PricingTier[] = [
     {
+      name: "Free",
+      price: { monthly: 0, annual: 0 },
+      description: "Perfect for individuals getting started",
+      highlighted: false,
+      buttonText: "Get Started"
+    },
+    {
       name: "Basic",
-      price: { monthly: 29, annual: 290 },
+      price: { monthly: 2400, annual: 24000 },
       description: "Perfect for small teams getting started",
       highlighted: false,
       buttonText: "Start Free Trial"
     },
     {
       name: "Pro",
-      price: { monthly: 79, annual: 790 },
+      price: { monthly: 6500, annual: 65000 },
       description: "Ideal for growing businesses",
       highlighted: true,
       buttonText: "Get Started"
     },
     {
       name: "Enterprise",
-      price: { monthly: 199, annual: 1990 },
+      price: { monthly: 16500, annual: 165000 },
       description: "For large organizations with advanced needs",
       highlighted: false,
       buttonText: "Contact Sales"
@@ -49,18 +57,18 @@ export function PricingSection() {
   ];
 
   const comparisonFeatures: Feature[] = [
-    { name: "Team Members", basic: "Up to 5", pro: "Up to 25", enterprise: "Unlimited" },
-    { name: "Storage Space", basic: "10GB", pro: "100GB", enterprise: "1TB" },
-    { name: "Projects", basic: "3 Projects", pro: "25 Projects", enterprise: "Unlimited" },
-    { name: "Basic Analytics", basic: true, pro: true, enterprise: true },
-    { name: "Advanced Analytics", basic: false, pro: true, enterprise: true },
-    { name: "API Access", basic: false, pro: true, enterprise: true },
-    { name: "Priority Support", basic: false, pro: true, enterprise: true },
-    { name: "Custom Integrations", basic: false, pro: false, enterprise: true },
-    { name: "Dedicated Account Manager", basic: false, pro: false, enterprise: true },
-    { name: "SLA Guarantee", basic: false, pro: false, enterprise: true },
-    { name: "Advanced Security", basic: false, pro: true, enterprise: true },
-    { name: "White-label Solution", basic: false, pro: false, enterprise: true }
+    { name: "Team Members", free: "1 User", basic: "Up to 5", pro: "Up to 25", enterprise: "Unlimited" },
+    { name: "Storage Space", free: "1GB", basic: "10GB", pro: "100GB", enterprise: "1TB" },
+    { name: "Projects", free: "1 Project", basic: "3 Projects", pro: "25 Projects", enterprise: "Unlimited" },
+    { name: "Basic Analytics", free: true, basic: true, pro: true, enterprise: true },
+    { name: "Advanced Analytics", free: false, basic: false, pro: true, enterprise: true },
+    { name: "API Access", free: false, basic: false, pro: true, enterprise: true },
+    { name: "Priority Support", free: false, basic: false, pro: true, enterprise: true },
+    { name: "Custom Integrations", free: false, basic: false, pro: false, enterprise: true },
+    { name: "Dedicated Account Manager", free: false, basic: false, pro: false, enterprise: true },
+    { name: "SLA Guarantee", free: false, basic: false, pro: false, enterprise: true },
+    { name: "Advanced Security", free: false, basic: false, pro: true, enterprise: true },
+    { name: "White-label Solution", free: false, basic: false, pro: false, enterprise: true }
   ];
 
   return (
@@ -143,11 +151,18 @@ export function PricingSection() {
           viewport={{ once: true }}
         >
           <div className="overflow-x-auto scrollbar-black">
-            <table className="w-full border-collapse border border-neutral-800 rounded-2xl overflow-hidden">
+            <table className="w-full border-collapse border border-neutral-800 rounded-2xl overflow-hidden table-fixed">
+              <colgroup>
+                <col className="w-1/5" />
+                <col className="w-1/5" />
+                <col className="w-1/5" />
+                <col className="w-1/5" />
+                <col className="w-1/5" />
+              </colgroup>
               <thead>
                 {/* Pricing Header Row */}
                 <tr className="border-b border-neutral-800">
-                  <th className="text-left py-6 px-6 text-white font-medium border-r border-neutral-800">
+                  <th className="text-left py-6 px-6 text-white font-medium border-r border-neutral-800 w-1/5">
                     <div className="flex items-center">
                       <span className="text-lg font-bold">Plans</span>
                     </div>
@@ -155,7 +170,7 @@ export function PricingSection() {
                   {pricingTiers.map((tier, index) => (
                     <motion.th
                       key={tier.name}
-                      className="text-center py-6 px-6 border-r border-neutral-800 last:border-r-0"
+                      className="text-center py-6 px-6 border-r border-neutral-800 last:border-r-0 w-1/5"
                       initial={{ opacity: 0, y: -20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.1 * index }}
@@ -164,12 +179,12 @@ export function PricingSection() {
                       <div className="space-y-3">
                         <div className="text-xl font-bold text-white">{tier.name}</div>
                         <div className="text-3xl font-bold text-white">
-                          ${isAnnual ? Math.floor(tier.price.annual / 12) : tier.price.monthly}
-                          <span className="text-sm text-neutral-400 font-normal">/month</span>
+                          {tier.price.monthly === 0 ? 'Free' : `₹${isAnnual ? Math.floor(tier.price.annual / 12) : tier.price.monthly}`}
+                          {tier.price.monthly !== 0 && <span className="text-sm text-neutral-400 font-normal">/month</span>}
                         </div>
-                        {isAnnual && (
+                        {isAnnual && tier.price.annual > 0 && (
                           <div className="text-xs text-green-400">
-                            Billed annually (${tier.price.annual}/year)
+                            Billed annually (₹{tier.price.annual}/year)
                           </div>
                         )}
                         <motion.button
@@ -194,11 +209,11 @@ export function PricingSection() {
                     transition={{ duration: 0.3, delay: 0.05 * index }}
                     viewport={{ once: true }}
                   >
-                    <td className="py-4 px-6 text-neutral-300 border-r border-neutral-800 font-medium">
+                    <td className="py-4 px-6 text-neutral-300 border-r border-neutral-800 font-medium w-1/5">
                       {feature.name}
                     </td>
-                    {[feature.basic, feature.pro, feature.enterprise].map((value, tierIndex) => (
-                      <td key={tierIndex} className="py-4 px-6 text-center border-r border-neutral-800 last:border-r-0">
+                    {[feature.free, feature.basic, feature.pro, feature.enterprise].map((value, tierIndex) => (
+                      <td key={tierIndex} className="py-4 px-6 text-center border-r border-neutral-800 last:border-r-0 w-1/5">
                         {typeof value === 'string' ? (
                           <motion.span
                             className="text-neutral-300 font-medium"

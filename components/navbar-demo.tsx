@@ -27,9 +27,9 @@ function Navbar({ className }: { className?: string }) {
         {/* Company Logo/Name */}
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">A</span>
+            <span className="text-white font-bold text-sm">V</span>
           </div>
-          <span className="text-xl font-bold text-white">Algoz Tech</span>
+          <span className="text-xl font-bold text-white">ViewMarket</span>
         </div>
 
         {/* Menu Items */}

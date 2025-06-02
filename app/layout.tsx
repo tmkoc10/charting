@@ -22,9 +22,9 @@ export const metadata: Metadata = {
   title: "Advanced Trading Platform | Real-time Charts & Analytics",
   description: "Professional trading platform with real-time charts, technical indicators, and advanced analytics. Trade with confidence using our cutting-edge tools.",
   keywords: "trading, charts, technical analysis, indicators, real-time data, financial markets",
-  authors: [{ name: "Algo Z Tech" }],
-  creator: "Algo Z Tech",
-  publisher: "Algo Z Tech",
+  authors: [{ name: "ViewMarket" }],
+  creator: "ViewMarket",
+  publisher: "ViewMarket",
   formatDetection: {
     email: false,
     address: false,

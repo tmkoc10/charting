@@ -33,10 +33,11 @@ export function FooterSection() {
       "Help"
     ],
     Legal: [
-      "Licence",
-      "Privacy",
-      "Cookies",
-      "Security"
+      { name: "Privacy Policy", href: "/privacy-policy" },
+      { name: "Disclaimer Policy", href: "/disclaimer-policy" },
+      { name: "Terms & Conditions", href: "/terms-and-conditions" },
+      { name: "Cookies Policy", href: "/cookies-policy" },
+      { name: "Refund & Cancellation", href: "/refund-and-cancellation" }
     ]
   };
 
@@ -118,9 +119,9 @@ export function FooterSection() {
               viewport={{ once: true }}
             >
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
+                <span className="text-white font-bold text-sm">V</span>
               </div>
-              <span className="text-xl font-bold">Algo Z Tech</span>
+              <span className="text-xl font-bold">ViewMarket</span>
             </motion.div>
           </div>
 
@@ -137,12 +138,12 @@ export function FooterSection() {
               <h3 className="text-white font-semibold mb-4">{title}</h3>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
+                  <li key={typeof link === 'string' ? link : link.name}>
                     <a
-                      href="#"
+                      href={typeof link === 'string' ? "#" : link.href}
                       className="text-neutral-400 hover:text-white transition-colors duration-200"
                     >
-                      {link}
+                      {typeof link === 'string' ? link : link.name}
                     </a>
                   </li>
                 ))}
@@ -201,7 +202,7 @@ export function FooterSection() {
           viewport={{ once: true }}
         >
           <p className="text-neutral-400 text-sm text-center max-w-4xl mx-auto">
-            Trading involves risk. Users trade at their own risk. Algoz Tech only provides tools and is not liable for any financial
+            Trading involves risk. Users trade at their own risk. ViewMarket only provides tools and is not liable for any financial
             losses. Past performance is not indicative of future results. Always conduct your own research before making
             investment decisions.
           </p>
@@ -216,7 +217,7 @@ export function FooterSection() {
           viewport={{ once: true }}
         >
           <p className="text-neutral-500 text-xs text-center">
-            © {new Date().getFullYear()} Algo Z Tech. All rights reserved.
+            © {new Date().getFullYear()} ViewMarket. All rights reserved.
           </p>
         </motion.div>
       </div>

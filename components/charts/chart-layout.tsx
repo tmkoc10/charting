@@ -276,9 +276,11 @@ export function ChartLayout() {
         displayValues = latestResult.value as Record<string, number>;
       }
 
-      // Create applied indicator
+      // Create applied indicator with a predictable ID to avoid hydration issues
+      // Use a counter-based approach that's deterministic
+      const indicatorCounter = appliedIndicators.filter(ind => ind.name === indicator.name).length;
       const appliedIndicator: AppliedIndicator = {
-        id: `${indicator.id}_${Date.now()}`, // Unique ID
+        id: `${indicator.id}_${indicatorCounter}`, // Unique ID based on indicator type and count
         name: indicator.name,
         shortName: getIndicatorShortName(indicator.id),
         parameters: indicator.parameters || {},
@@ -295,7 +297,7 @@ export function ChartLayout() {
     } catch (error) {
       console.error("Error adding indicator:", error);
     }
-  }, [currentSymbol, currentTimeframe, appliedIndicators.length]);
+  }, [currentSymbol, currentTimeframe, appliedIndicators]);
 
   const handleIndicatorToggleVisibility = useCallback((indicatorId: string) => {
     setAppliedIndicators(prev =>
@@ -462,7 +464,7 @@ export function ChartLayout() {
                 className={`flex flex-col min-h-0 p-1 ${
                   isDrawerResizing || isAnimationPaused
                     ? 'will-change-transform'
-                    : 'transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]'
+                    : 'transition-all duration-200 ease-out'
                 }`}
                 style={{
                   height: `${chartHeight}%`,
@@ -516,7 +518,7 @@ export function ChartLayout() {
                   className={`${
                     isDrawerResizing || isAnimationPaused
                       ? 'will-change-transform'
-                      : 'transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]'
+                      : 'transition-all duration-200 ease-out'
                   }`}
                   style={{
                     height: `${drawerHeight}%`,

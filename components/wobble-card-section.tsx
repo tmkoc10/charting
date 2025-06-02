@@ -92,43 +92,7 @@ export function WobbleCardSection() {
           </WobbleCard>
         </motion.div>
 
-        {/* Additional Features Grid */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          viewport={{ once: true }}
-        >
-          <div className="text-center p-6 rounded-lg bg-neutral-900/50 border border-neutral-800">
-            <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-2">
-              99.99%
-            </div>
-            <div className="text-sm text-neutral-400 mb-2">Reliability</div>
-            <div className="text-xs text-neutral-500">Enterprise-grade uptime</div>
-          </div>
-          <div className="text-center p-6 rounded-lg bg-neutral-900/50 border border-neutral-800">
-            <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-2">
-              &lt;100ms
-            </div>
-            <div className="text-sm text-neutral-400 mb-2">Response Time</div>
-            <div className="text-xs text-neutral-500">Lightning-fast performance</div>
-          </div>
-          <div className="text-center p-6 rounded-lg bg-neutral-900/50 border border-neutral-800">
-            <div className="text-2xl md:text-3xl font-bold text-emerald-400 mb-2">
-              256-bit
-            </div>
-            <div className="text-sm text-neutral-400 mb-2">Encryption</div>
-            <div className="text-xs text-neutral-500">Military-grade security</div>
-          </div>
-          <div className="text-center p-6 rounded-lg bg-neutral-900/50 border border-neutral-800">
-            <div className="text-2xl md:text-3xl font-bold text-orange-400 mb-2">
-              24/7
-            </div>
-            <div className="text-sm text-neutral-400 mb-2">Support</div>
-            <div className="text-xs text-neutral-500">Always here to help</div>
-          </div>
-        </motion.div>
+
       </div>
     </div>
   );
