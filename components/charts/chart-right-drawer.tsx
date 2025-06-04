@@ -15,14 +15,14 @@ export function ChartRightDrawer({ isOpen, onClose, activeTab, isAnimationPaused
 
   const renderContent = () => {
     switch (activeTab) {
-      case "bookmark":
+      case "watchlist":
         return (
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className={`text-lg font-semibold ${
                 theme === 'dark' ? 'text-white' : 'text-black'
               }`}>
-                Bookmarks
+                Watchlist
               </h3>
               <button
                 onClick={onClose}
@@ -41,23 +41,40 @@ export function ChartRightDrawer({ isOpen, onClose, activeTab, isAnimationPaused
             <div className={`text-sm ${
               theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'
             }`}>
-              <p className="mb-4">Save your favorite charts, symbols, and analysis for quick access.</p>
+              <p className="mb-4">Track your favorite symbols and monitor market movements in real-time.</p>
               <div className="space-y-2">
                 <div className={`p-3 rounded border ${
-                  theme === 'dark' 
-                    ? 'border-zinc-700 bg-zinc-800/50' 
+                  theme === 'dark'
+                    ? 'border-zinc-700 bg-zinc-800/50'
                     : 'border-zinc-300 bg-zinc-50'
                 }`}>
-                  <div className="font-medium">NIFTY 1H Chart</div>
-                  <div className="text-xs opacity-70">Saved 2 hours ago</div>
+                  <div className="flex justify-between items-center">
+                    <div className="font-medium">NIFTY 50</div>
+                    <div className="text-green-500 text-xs">+0.85%</div>
+                  </div>
+                  <div className="text-xs opacity-70">24,542.50 • NSE</div>
                 </div>
                 <div className={`p-3 rounded border ${
-                  theme === 'dark' 
-                    ? 'border-zinc-700 bg-zinc-800/50' 
+                  theme === 'dark'
+                    ? 'border-zinc-700 bg-zinc-800/50'
                     : 'border-zinc-300 bg-zinc-50'
                 }`}>
-                  <div className="font-medium">BANKNIFTY Analysis</div>
-                  <div className="text-xs opacity-70">Saved yesterday</div>
+                  <div className="flex justify-between items-center">
+                    <div className="font-medium">BANKNIFTY</div>
+                    <div className="text-red-500 text-xs">-0.42%</div>
+                  </div>
+                  <div className="text-xs opacity-70">51,234.75 • NSE</div>
+                </div>
+                <div className={`p-3 rounded border ${
+                  theme === 'dark'
+                    ? 'border-zinc-700 bg-zinc-800/50'
+                    : 'border-zinc-300 bg-zinc-50'
+                }`}>
+                  <div className="flex justify-between items-center">
+                    <div className="font-medium">RELIANCE</div>
+                    <div className="text-green-500 text-xs">+1.23%</div>
+                  </div>
+                  <div className="text-xs opacity-70">2,845.60 • NSE</div>
                 </div>
               </div>
             </div>
@@ -266,6 +283,70 @@ export function ChartRightDrawer({ isOpen, onClose, activeTab, isAnimationPaused
                 }`}>
                   <div className="font-medium mb-1">Chat Assistant</div>
                   <div className="text-xs opacity-70">Ask questions about market trends, strategies, and technical indicators.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case "api":
+        return (
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className={`text-lg font-semibold ${
+                theme === 'dark' ? 'text-white' : 'text-black'
+              }`}>
+                API
+              </h3>
+              <button
+                onClick={onClose}
+                className={`p-1 rounded hover:bg-opacity-20 transition-colors ${
+                  theme === 'dark'
+                    ? 'hover:bg-white text-zinc-400 hover:text-white'
+                    : 'hover:bg-black text-zinc-600 hover:text-black'
+                }`}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div className={`text-sm ${
+              theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'
+            }`}>
+              <p className="mb-4">Access trading APIs, manage API keys, and integrate with external services.</p>
+              <div className="space-y-3">
+                <div className={`p-3 rounded border ${
+                  theme === 'dark'
+                    ? 'border-zinc-700 bg-zinc-800/50'
+                    : 'border-zinc-300 bg-zinc-50'
+                }`}>
+                  <div className="font-medium mb-1">API Keys</div>
+                  <div className="text-xs opacity-70">Manage your trading API keys and authentication tokens.</div>
+                </div>
+                <div className={`p-3 rounded border ${
+                  theme === 'dark'
+                    ? 'border-zinc-700 bg-zinc-800/50'
+                    : 'border-zinc-300 bg-zinc-50'
+                }`}>
+                  <div className="font-medium mb-1">REST API</div>
+                  <div className="text-xs opacity-70">Access market data, place orders, and manage positions via REST endpoints.</div>
+                </div>
+                <div className={`p-3 rounded border ${
+                  theme === 'dark'
+                    ? 'border-zinc-700 bg-zinc-800/50'
+                    : 'border-zinc-300 bg-zinc-50'
+                }`}>
+                  <div className="font-medium mb-1">WebSocket API</div>
+                  <div className="text-xs opacity-70">Real-time market data streaming and order updates.</div>
+                </div>
+                <div className={`p-3 rounded border ${
+                  theme === 'dark'
+                    ? 'border-zinc-700 bg-zinc-800/50'
+                    : 'border-zinc-300 bg-zinc-50'
+                }`}>
+                  <div className="font-medium mb-1">API Documentation</div>
+                  <div className="text-xs opacity-70">Complete API reference, examples, and integration guides.</div>
                 </div>
               </div>
             </div>

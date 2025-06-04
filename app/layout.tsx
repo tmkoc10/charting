@@ -4,7 +4,6 @@ import { QueryProvider } from "@/lib/query-client";
 import { PerformanceMonitoringProvider } from "@/lib/performance-provider";
 import { PrefetchProvider } from "@/lib/prefetch";
 import { ThemeProvider } from "@/lib/theme-context";
-// import { CriticalOptimizationsProvider } from "@/lib/critical-optimizations-provider";
 import "./globals.css";
 
 const geistSans = Geist({

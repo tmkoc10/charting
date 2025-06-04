@@ -22,6 +22,19 @@ export interface Database {
           provider: string | null
           provider_id: string | null
           metadata: Json
+
+          // Enhanced security fields
+          role: string
+          account_status: string
+          mfa_enabled: boolean
+          last_login_at: string | null
+          last_login_ip: string | null
+          failed_login_attempts: number
+          account_locked_until: string | null
+          password_changed_at: string
+          terms_accepted_at: string | null
+          privacy_policy_accepted_at: string | null
+
           created_at: string
           updated_at: string
         }
@@ -37,6 +50,19 @@ export interface Database {
           provider?: string | null
           provider_id?: string | null
           metadata?: Json
+
+          // Enhanced security fields
+          role?: string
+          account_status?: string
+          mfa_enabled?: boolean
+          last_login_at?: string | null
+          last_login_ip?: string | null
+          failed_login_attempts?: number
+          account_locked_until?: string | null
+          password_changed_at?: string
+          terms_accepted_at?: string | null
+          privacy_policy_accepted_at?: string | null
+
           created_at?: string
           updated_at?: string
         }
@@ -52,6 +78,19 @@ export interface Database {
           provider?: string | null
           provider_id?: string | null
           metadata?: Json
+
+          // Enhanced security fields
+          role?: string
+          account_status?: string
+          mfa_enabled?: boolean
+          last_login_at?: string | null
+          last_login_ip?: string | null
+          failed_login_attempts?: number
+          account_locked_until?: string | null
+          password_changed_at?: string
+          terms_accepted_at?: string | null
+          privacy_policy_accepted_at?: string | null
+
           created_at?: string
           updated_at?: string
         }

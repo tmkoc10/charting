@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated reports and analysis files
+bundle-analysis-report.json
+optimization-report.json
+performance-budget.json
+lighthouse-report.html

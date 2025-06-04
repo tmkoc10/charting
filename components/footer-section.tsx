@@ -7,31 +7,6 @@ export function FooterSection() {
   const [email, setEmail] = useState("");
 
   const footerSections = {
-    Product: [
-      "Features",
-      "Solution",
-      "Customers",
-      "Pricing",
-      "Help",
-      "About"
-    ],
-    Solution: [
-      "Startup",
-      "Freelancers",
-      "Organizations",
-      "Students",
-      "Collaboration",
-      "Design",
-      "Management"
-    ],
-    Company: [
-      "About",
-      "Careers",
-      "Blog",
-      "Press",
-      "Contact",
-      "Help"
-    ],
     Legal: [
       { name: "Privacy Policy", href: "/privacy-policy" },
       { name: "Disclaimer Policy", href: "/disclaimer-policy" },
@@ -108,7 +83,7 @@ export function FooterSection() {
   return (
     <footer className="bg-white text-black py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Logo */}
           <div className="lg:col-span-1">
             <motion.div

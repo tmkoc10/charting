@@ -30,11 +30,37 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     setError(null)
 
     try {
-      const { user, error } = await authService.signInWithEmail(email, password)
-      
+      // Get client information for security logging
+      const clientInfo = {
+        ip: '127.0.0.1', // In production, this would come from headers
+        userAgent: navigator.userAgent
+      }
+
+      const { user, error } = await authService.signInWithEmail(email, password, clientInfo)
+
       if (error) throw error
       if (!user) throw new Error('No user returned after successful login')
-      
+
+      // Check if user account is in good standing
+      if (user.account_status === 'suspended') {
+        throw new Error('Your account has been suspended. Please contact support.')
+      }
+
+      if (user.account_status === 'locked') {
+        throw new Error('Your account is locked. Please contact support.')
+      }
+
+      if (user.account_status === 'pending_verification') {
+        throw new Error('Please verify your email address before logging in.')
+      }
+
+      // Check if MFA is required for this user's role
+      if (user.role && ['admin', 'trader'].includes(user.role) && !user.mfa_enabled) {
+        // Redirect to MFA setup page
+        router.push('/auth/setup-mfa')
+        return
+      }
+
       // Redirect to charts page after successful login
       router.push('/charts')
     } catch (error: unknown) {

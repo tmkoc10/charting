@@ -2,25 +2,17 @@
 
 
 import { useTheme } from "@/lib/theme-context";
+import { Eye } from 'lucide-react';
 
 // Navigation Icon Components
-const BookmarkIcon = ({ className }: { className?: string }) => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+// Professional Watchlist Icon - Using Lucide Eye icon for better semantic meaning
+// Matches TradingView's design patterns and provides clearer user intent
+const WatchlistIcon = ({ className }: { className?: string }) => (
+  <Eye
+    size={24}
+    strokeWidth={1.5}
     className={className}
-  >
-    <path
-      d="M19 21L12 16L5 21V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H17C17.5304 3 18.0391 3.21071 18.4142 3.58579C18.7893 3.96086 19 4.46957 19 5V21Z"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
+  />
 );
 
 const ClockIcon = ({ className }: { className?: string }) => (
@@ -284,6 +276,45 @@ const AILogoIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const APILogoIcon = ({ className }: { className?: string }) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    {/* Letter "A" - refined geometry with optimal proportions */}
+    <path
+      d="M1.2 20L5.8 6H6.8L11.4 20H9.6L8.6 17H4L3 20H1.2ZM4.6 15.2H8L6.3 10.2L4.6 15.2Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    {/* Letter "P" - enhanced curves and professional proportions */}
+    <path
+      d="M12.5 6H16.8C18.0 6 19 6.9 19 8.2V9.8C19 11.1 18.0 12 16.8 12H14.5V20H12.5V6ZM14.5 8V10H16.8V8H14.5Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    {/* Letter "I" - refined serif design matching AI logo aesthetic */}
+    <path
+      d="M20.2 6H23.2V8H22.2V18H23.2V20H20.2V18H21.2V8H20.2V6Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </svg>
+);
+
 const QuestionMarkIcon = ({ className }: { className?: string }) => (
   <svg
     width="24"
@@ -366,10 +397,10 @@ export function ChartSidebarRight({ onTabClick, activeTab, isDrawerOpen }: Chart
       {/* Main Navigation Icons */}
       <div className="flex flex-col items-center pt-3 space-y-4">
         <NavigationIcon
-          icon={<BookmarkIcon />}
-          label="Bookmarks / Saved Items"
-          onClick={() => handleIconClick('bookmark')}
-          isActive={isDrawerOpen && activeTab === 'bookmark'}
+          icon={<WatchlistIcon />}
+          label="Watchlist / Market Watch"
+          onClick={() => handleIconClick('watchlist')}
+          isActive={isDrawerOpen && activeTab === 'watchlist'}
           theme={theme}
         />
 
@@ -394,6 +425,14 @@ export function ChartSidebarRight({ onTabClick, activeTab, isDrawerOpen }: Chart
           label="Chat / Messages"
           onClick={() => handleIconClick('chat')}
           isActive={isDrawerOpen && activeTab === 'chat'}
+          theme={theme}
+        />
+
+        <NavigationIcon
+          icon={<APILogoIcon />}
+          label="API"
+          onClick={() => handleIconClick('api')}
+          isActive={isDrawerOpen && activeTab === 'api'}
           theme={theme}
         />
       </div>

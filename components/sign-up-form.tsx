@@ -38,14 +38,29 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     }
 
     try {
-      const { user, error } = await authService.signUpWithEmail(email, password, fullName || undefined)
-      
+      // Get client information for security logging
+      const clientInfo = {
+        ip: '127.0.0.1', // In production, this would come from headers
+        userAgent: navigator.userAgent
+      }
+
+      const { user, error } = await authService.signUpWithEmail(
+        email,
+        password,
+        fullName || undefined,
+        clientInfo
+      )
+
       if (error) throw error
-      
+
       // For email confirmation flows, we'll redirect to success page
       // For auto-confirm (development), we'll redirect to charts
       if (user) {
-        router.push('/charts')
+        if (user.account_status === 'pending_verification') {
+          router.push('/auth/sign-up-success')
+        } else {
+          router.push('/charts')
+        }
       } else {
         router.push('/auth/sign-up-success')
       }
